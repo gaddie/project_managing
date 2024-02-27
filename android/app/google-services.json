@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "920782692727",
+    "project_id": "project-manager-e05f1",
+    "storage_bucket": "project-manager-e05f1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:920782692727:android:7f12988f96e09708f7c172",
+        "android_client_info": {
+          "package_name": "com.gadsonmulonga.project_managing"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBVFOIR2YLwbCVQPvd-4Zt7UVuCy5G8ZnA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
