@@ -7,6 +7,7 @@ import 'package:project_manager/Constants.dart';
 import 'package:project_manager/HomePage.dart';
 import 'package:project_manager/Screens/RegisterScreen.dart';
 import 'package:project_manager/Screens/ForgotPassword.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);

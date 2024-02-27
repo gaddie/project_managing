@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -14,6 +15,17 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
+  final _auth = FirebaseAuth.instance;
+  String email = '';
+  String password = '';
+
+  //Function to validate email format
+  bool isValidEmail(String email) {
+    // Regular expression for email validation
+    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+    return emailRegex.hasMatch(email);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,24 +47,84 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       width: 100,
                     ),
                   ),
-                  InputField(label: 'Username'),
-                  InputField(label: 'Email'),
+                  InputField(
+                    label: 'Email',
+                    onChanged: (value) {
+                      setState(() {
+                        email = value;
+                      });
+                    },
+                  ),
                   InputField(
                     label: 'Password',
                     password: true,
-                  ),
-                  InputField(
-                    label: 'Confirm Password',
-                    password: true,
+                    onChanged: (value) {
+                      setState(() {
+                        password = value;
+                      });
+                    },
                   ),
                   CustomButton(
                     txtColor: kLightColor,
                     bgColor: kBottomAppColor,
-                    callBackFunction: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => HomePage()),
-                      );
+                    callBackFunction: () async {
+                      if (isValidEmail(email)) {
+                        if (password.length >= 8) {
+                          try {
+                            final newUser =
+                                await _auth.createUserWithEmailAndPassword(
+                              email: email,
+                              password: password,
+                            );
+                            if (newUser != null) {
+                              Navigator.pushNamed(context, '/homePage');
+                            }
+                          } catch (e) {
+                            print(e);
+                          }
+                        } else {
+                          // Show a dialog if the password is less than 8 characters
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text('Error'),
+                                content: Text(
+                                    'Password must be at least 8 characters long'),
+                                actions: <Widget>[
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context)
+                                          .pop(); // Close the dialog
+                                    },
+                                    child: Text('OK'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        }
+                      } else {
+                        // Show a dialog if the email is invalid
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text('Error'),
+                              content: Text('Invalid Email'),
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context)
+                                        .pop(); // Close the dialog
+                                  },
+                                  child: Text('OK'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      }
                     },
                     label: 'Register',
                   ),
