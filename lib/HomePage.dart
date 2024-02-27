@@ -85,14 +85,17 @@ class _HomePageState extends State<HomePage> {
                     : index == 1
                         ? Icons.notifications
                         : index == 2
-                            ? Icons.person
-                            : Icons.settings,
+                            ? Icons.settings
+                            : Icons.logout,
                 color: _selectedIndex == index ? kDarkColor : kBgLightColor,
               ),
               onPressed: () {
                 setState(() {
                   _selectedIndex = index;
-                  // Add logic to handle navigation or other actions
+                  if (_selectedIndex == 3) {
+                    _auth.signOut();
+                    Navigator.pop(context);
+                  }
                 });
               },
             );
