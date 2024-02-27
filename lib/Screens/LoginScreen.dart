@@ -17,6 +17,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final _auth = FirebaseAuth.instance;
   String email = '';
   String password = '';
 
@@ -90,12 +91,17 @@ class _LoginScreenState extends State<LoginScreen> {
                   CustomButton(
                     txtColor: kLightColor,
                     bgColor: kBottomAppColor,
-                    callBackFunction: () {
+                    callBackFunction: () async {
                       if (isValidEmail(email)) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => HomePage()),
-                        );
+                        final user = await _auth.signInWithEmailAndPassword(
+                            email: email, password: password);
+                        try {
+                          if (user != null) {
+                            Navigator.pushNamed(context, '/homePage');
+                          }
+                        } catch (e) {
+                          print(e);
+                        }
                       } else {
                         showDialog(
                           context: context,
