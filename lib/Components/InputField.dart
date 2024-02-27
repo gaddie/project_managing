@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:project_manager/Constants.dart';
 
 class InputField extends StatelessWidget {
-  InputField({required this.label, this.password = false});
+  InputField({required this.label, this.password = false, this.onChanged});
   String label;
   bool password;
+  final ValueChanged<String>? onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +26,7 @@ class InputField extends StatelessWidget {
                   8.0), // Add some spacing between the label and the TextField
           TextField(
             obscureText: password,
+            onChanged: onChanged,
             decoration: InputDecoration(
               contentPadding:
                   EdgeInsets.symmetric(vertical: 14.0, horizontal: 16.0),

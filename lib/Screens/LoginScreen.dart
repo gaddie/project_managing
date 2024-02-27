@@ -16,6 +16,16 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  String email = '';
+  String password = '';
+
+  //Function to validate email format
+  bool isValidEmail(String email) {
+    // Regular expression for email validation
+    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+    return emailRegex.hasMatch(email);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,10 +47,22 @@ class _LoginScreenState extends State<LoginScreen> {
                       width: 100,
                     ),
                   ),
-                  InputField(label: 'Email'),
+                  InputField(
+                    label: 'Email',
+                    onChanged: (value) {
+                      setState(() {
+                        email = value;
+                      });
+                    },
+                  ),
                   InputField(
                     label: 'Password',
                     password: true,
+                    onChanged: (value) {
+                      setState(() {
+                        password = value;
+                      });
+                    },
                   ),
                   Padding(
                     padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
@@ -68,10 +90,31 @@ class _LoginScreenState extends State<LoginScreen> {
                     txtColor: kLightColor,
                     bgColor: kBottomAppColor,
                     callBackFunction: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => HomePage()),
-                      );
+                      if (isValidEmail(email)) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => HomePage()),
+                        );
+                      } else {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text('Error'),
+                              content: Text('Invalid Email'),
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context)
+                                        .pop(); // Close the dialog
+                                  },
+                                  child: Text('OK'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      }
                     },
                     label: 'Login',
                   ),
