@@ -110,6 +110,7 @@ class _CreateProjectState extends State<CreateProject> {
                           if (projectName.isEmpty ||
                               description.isEmpty ||
                               startUpCost.isEmpty) {
+                            print('show dialog');
                             showDialog(
                               context: context,
                               builder: (BuildContext context) {

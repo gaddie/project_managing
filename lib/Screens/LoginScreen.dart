@@ -113,6 +113,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             print(e);
                           }
                         } else {
+                          setState(() {
+                            showSpinner = false;
+                          });
                           showDialog(
                             context: context,
                             builder: (BuildContext context) {
