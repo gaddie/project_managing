@@ -16,6 +16,8 @@ class CreateProject extends StatefulWidget {
 }
 
 class _CreateProjectState extends State<CreateProject> {
+  final _firestore = FirebaseFirestore.instance;
+
   String projectName = '';
   final _auth = FirebaseAuth.instance;
   late User loggedInUser;
@@ -105,13 +107,41 @@ class _CreateProjectState extends State<CreateProject> {
                       bgColor: kBottomAppColor,
                       callBackFunction: () {
                         setState(() {
-                          print(projectName);
-                          print(description);
-                          print(startUpCost);
-                          if (startDate == null) {
-                            startDate = DateTime.now();
-                            print(startDate);
+                          if (projectName.isEmpty ||
+                              description.isEmpty ||
+                              startUpCost.isEmpty) {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text('Error'),
+                                  content: Text('Please fill in all fields.'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context)
+                                            .pop(); // Close the dialog
+                                      },
+                                      child: Text('OK'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          } else {
+                            // Proceed to save data in Firebase
+                            if (startDate == null) {
+                              startDate = DateTime.now();
+                            }
+                            _firestore.collection('projects').add({
+                              'user': loggedInUser.email,
+                              'projectName': projectName,
+                              'description': description,
+                              'startUpCost': startUpCost,
+                              'startDate': startDate,
+                            });
                           }
+
                           Navigator.pop(context);
                         });
                       },
