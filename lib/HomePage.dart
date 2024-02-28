@@ -21,6 +21,7 @@ class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
   final _auth = FirebaseAuth.instance;
   late User loggedInUser;
+
   @override
   void initState() {
     super.initState();

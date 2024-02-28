@@ -4,6 +4,9 @@ import 'package:project_manager/Components/InputField.dart';
 import 'package:project_manager/Components/TextField.dart';
 import 'package:project_manager/Components/CustomButton.dart';
 import 'package:delayed_display/delayed_display.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:project_manager/Components/DateField.dart';
 
 class CreateProject extends StatefulWidget {
   const CreateProject({Key? key}) : super(key: key);
@@ -13,6 +16,31 @@ class CreateProject extends StatefulWidget {
 }
 
 class _CreateProjectState extends State<CreateProject> {
+  String projectName = '';
+  final _auth = FirebaseAuth.instance;
+  late User loggedInUser;
+  DateTime? startDate;
+  String startUpCost = '';
+  String description = '';
+
+  @override
+  void initState() {
+    super.initState();
+    getCurrentUser();
+  }
+
+  void getCurrentUser() async {
+    try {
+      final user = await _auth.currentUser;
+      if (user != null) {
+        loggedInUser = user;
+        // print(loggedInUser.email);
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,16 +72,46 @@ class _CreateProjectState extends State<CreateProject> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    InputField(label: 'Project Name'),
-                    InputField(label: 'Start Up cost'),
-                    InputField(label: 'Start Date'),
-                    InputField(label: 'End Date'),
-                    ProjectForm(),
+                    InputField(
+                      label: 'Project Name',
+                      onChanged: (value) {
+                        projectName = value;
+                      },
+                    ),
+                    InputField(
+                      label: 'Start Up cost',
+                      integerOnly: true,
+                      onChanged: (value) {
+                        startUpCost = value;
+                      },
+                    ),
+                    DateField(
+                      label: 'Start Date',
+                      onChanged: (DateTime selectedDate) {
+                        setState(() {
+                          startDate = selectedDate;
+                        });
+                      },
+                    ),
+                    ProjectForm(
+                      onChanged: (value) {
+                        setState(() {
+                          description = value;
+                        });
+                      },
+                    ),
                     CustomButton(
                       txtColor: kLightColor,
                       bgColor: kBottomAppColor,
                       callBackFunction: () {
                         setState(() {
+                          print(projectName);
+                          print(description);
+                          print(startUpCost);
+                          if (startDate == null) {
+                            startDate = DateTime.now();
+                            print(startDate);
+                          }
                           Navigator.pop(context);
                         });
                       },
