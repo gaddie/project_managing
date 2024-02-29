@@ -39,29 +39,29 @@ class _RiskAnalysisState extends State<RiskAnalysis> {
                   ),
                 ),
               ),
-              ReusableContainer(
-                label: 'Project 3',
-                color: kGreenColor,
-                condition: riskProfitability[1],
-                onButtonPressed: () {
-                  return ProjectDetails();
-                },
-              ),
-              ReusableContainer(
-                label: 'Project 2',
-                color: kRedColor,
-                condition: riskProfitability[4],
-                onButtonPressed: () {
-                  return ProjectDetails();
-                },
-              ),
-              ReusableContainer(
-                label: 'Project 2',
-                condition: riskProfitability[5],
-                onButtonPressed: () {
-                  return ProjectDetails();
-                },
-              ),
+              // ReusableContainer(
+              //   label: 'Project 3',
+              //   color: kGreenColor,
+              //   date: DateTime.now(),
+              //   onButtonPressed: () {
+              //     return ProjectDetails();
+              //   },
+              // ),
+              // ReusableContainer(
+              //   label: 'Project 2',
+              //   color: kRedColor,
+              //   date: riskProfitability[4],
+              //   onButtonPressed: () {
+              //     return ProjectDetails();
+              //   },
+              // ),
+              // ReusableContainer(
+              //   label: 'Project 2',
+              //   date: riskProfitability[5],
+              //   onButtonPressed: () {
+              //     return ProjectDetails();
+              //   },
+              // ),
               CustomButton(
                 txtColor: kLightColor,
                 bgColor: kBottomAppColor,

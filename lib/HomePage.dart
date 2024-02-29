@@ -10,6 +10,8 @@ import 'package:project_manager/Screens/ProjectDetails.dart';
 import 'package:project_manager/Screens/RiskAnalysis.dart';
 import 'package:project_manager/Components/CustomButton.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 
 class HomePage extends StatefulWidget {
   static const String id = 'homePage';
@@ -21,11 +23,14 @@ class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
   final _auth = FirebaseAuth.instance;
   late User loggedInUser;
+  final _firestore = FirebaseFirestore.instance;
+  late List<Map<String, dynamic>> projects = [];
 
   @override
   void initState() {
     super.initState();
     getCurrentUser();
+    getProjects();
   }
 
   void getCurrentUser() async {
@@ -33,10 +38,35 @@ class _HomePageState extends State<HomePage> {
       final user = await _auth.currentUser;
       if (user != null) {
         loggedInUser = user;
-        // print(loggedInUser.email);
       }
     } catch (e) {
       print(e);
+    }
+  }
+
+  // void getProjects() async {
+  //   final projectsSnapshot = await _firestore.collection('projects').get();
+  //   setState(() {
+  //     projects = projectsSnapshot.docs
+  //         .where((project) => project['user'] == loggedInUser.email)
+  //         .map((project) => project.data() as Map<String, dynamic>)
+  //         .toList();
+  //   });
+  // }
+
+  void getProjects() async {
+    await for (var snapshot in _firestore.collection('projects').snapshots()) {
+      List<Map<String, dynamic>> filteredProjects = [];
+      for (var project in snapshot.docs) {
+        Map<String, dynamic> projectData =
+            project.data() as Map<String, dynamic>;
+        if (projectData['user'] == loggedInUser.email) {
+          filteredProjects.add(projectData);
+        }
+      }
+      setState(() {
+        projects = filteredProjects;
+      });
     }
   }
 
@@ -96,7 +126,7 @@ class _HomePageState extends State<HomePage> {
                   if (_selectedIndex == 3) {
                     _auth.signOut();
                     Navigator.pop(context);
-                  }
+                  } else if (_selectedIndex == 1) {}
                 });
               },
             );
@@ -227,30 +257,27 @@ class _HomePageState extends State<HomePage> {
                       fontSize: kNormalFontSize, color: kBottomAppColor),
                 ),
               ),
-              ReusableContainer(
-                label: 'Project 1',
-                condition: 'In progress',
-                onButtonPressed: () {
-                  return ProjectDetails();
-                },
-              ),
-              ReusableContainer(
-                label: 'Project 2',
-                condition: 'In progress',
-                onButtonPressed: () {
-                  return ProjectDetails();
-                },
-              ),
-              CustomButton(
-                txtColor: kLightColor,
-                bgColor: kBottomAppColor,
-                callBackFunction: () {
-                  setState(() {
-                    Navigator.pop(context);
-                  });
-                },
-                label: 'Back',
-              ),
+              if (projects.isEmpty)
+                Center(
+                  child: Text("You do not have any projects"),
+                )
+              else
+                Column(
+                  children: projects.map((project) {
+                    Timestamp timestamp = project['startDate'];
+                    DateTime startDate = timestamp.toDate();
+                    String formattedDate =
+                        DateFormat('dd-MM-yyyy').format(startDate);
+                    return ReusableContainer(
+                      label: project['projectName'] ?? '',
+                      date: 'Start Date: ' + formattedDate,
+                      onButtonPressed: () {
+                        // Navigate to project details or any action you want
+                        return ProjectDetails();
+                      },
+                    );
+                  }).toList(),
+                ),
             ],
           ),
         ]),

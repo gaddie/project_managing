@@ -103,6 +103,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           final user = await _auth.signInWithEmailAndPassword(
                               email: email, password: password);
                           try {
+                            final user = await _auth.signInWithEmailAndPassword(
+                              email: email,
+                              password: password,
+                            );
                             if (user != null) {
                               Navigator.pushNamed(context, '/homePage');
                             }
@@ -110,7 +114,33 @@ class _LoginScreenState extends State<LoginScreen> {
                               showSpinner = false;
                             });
                           } catch (e) {
-                            print(e);
+                            setState(() {
+                              showSpinner = false;
+                            });
+                            // Check if the error is due to invalid credentials
+                            if (e is FirebaseAuthException) {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: Text('Error'),
+                                    content: Text('Invalid email or password'),
+                                    actions: <Widget>[
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context)
+                                              .pop(); // Close the dialog
+                                        },
+                                        child: Text('OK'),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            } else {
+                              // Handle other types of exceptions
+                              print(e);
+                            }
                           }
                         } else {
                           setState(() {
