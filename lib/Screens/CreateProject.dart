@@ -24,6 +24,7 @@ class _CreateProjectState extends State<CreateProject> {
   DateTime? startDate;
   String startUpCost = '';
   String description = '';
+  bool errorMessage = false;
 
   @override
   void initState() {
@@ -76,12 +77,14 @@ class _CreateProjectState extends State<CreateProject> {
                   children: [
                     InputField(
                       label: 'Project Name',
+                      errorText: errorMessage ? 'This field is required' : null,
                       onChanged: (value) {
                         projectName = value;
                       },
                     ),
                     InputField(
                       label: 'Start Up cost',
+                      errorText: errorMessage ? 'This field is required' : null,
                       integerOnly: true,
                       onChanged: (value) {
                         startUpCost = value;
@@ -107,33 +110,13 @@ class _CreateProjectState extends State<CreateProject> {
                       bgColor: kBottomAppColor,
                       callBackFunction: () {
                         setState(() {
-                          if (projectName.isEmpty ||
-                              description.isEmpty ||
-                              startUpCost.isEmpty) {
-                            print('show dialog');
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: Text('Error'),
-                                  content: Text('Please fill in all fields.'),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.of(context)
-                                            .pop(); // Close the dialog
-                                      },
-                                      child: Text('OK'),
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-                          } else {
-                            // Proceed to save data in Firebase
+                          if (projectName.isNotEmpty ||
+                              startUpCost.isNotEmpty ||
+                              description.isNotEmpty) {
                             if (startDate == null) {
                               startDate = DateTime.now();
                             }
+                            errorMessage = false;
                             _firestore.collection('projects').add({
                               'user': loggedInUser.email,
                               'projectName': projectName,
@@ -141,9 +124,10 @@ class _CreateProjectState extends State<CreateProject> {
                               'startUpCost': startUpCost,
                               'startDate': startDate,
                             });
+                            Navigator.pop(context);
+                          } else {
+                            errorMessage = true;
                           }
-
-                          Navigator.pop(context);
                         });
                       },
                       label: 'Create Project',

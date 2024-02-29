@@ -7,12 +7,14 @@ class InputField extends StatelessWidget {
       {required this.label,
       this.password = false,
       this.onChanged,
-      this.integerOnly = false});
+      this.integerOnly = false,
+      this.errorText});
 
   String label;
   bool password;
   final ValueChanged<String>? onChanged;
   final bool integerOnly;
+  final errorText;
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +37,7 @@ class InputField extends StatelessWidget {
             inputFormatters:
                 integerOnly ? [FilteringTextInputFormatter.digitsOnly] : null,
             decoration: InputDecoration(
+              errorText: errorText,
               contentPadding:
                   EdgeInsets.symmetric(vertical: 14.0, horizontal: 16.0),
               filled: true, // Set to true for a filled input field
