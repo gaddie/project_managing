@@ -7,6 +7,7 @@ import 'package:delayed_display/delayed_display.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:project_manager/Components/DateField.dart';
+import 'package:project_manager/Components/MessageHandler.dart';
 
 class CreateProject extends StatefulWidget {
   const CreateProject({Key? key}) : super(key: key);
@@ -124,6 +125,8 @@ class _CreateProjectState extends State<CreateProject> {
                               'startUpCost': startUpCost,
                               'startDate': startDate,
                             });
+                            MessageHandler.showMessage(context,
+                                'Your has been created', kBottomAppColor);
                             Navigator.pop(context);
                           } else {
                             errorMessage = true;
