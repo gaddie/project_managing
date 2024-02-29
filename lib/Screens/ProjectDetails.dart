@@ -4,7 +4,16 @@ import 'package:delayed_display/delayed_display.dart';
 import 'package:project_manager/Components/CustomButton.dart';
 
 class ProjectDetails extends StatefulWidget {
-  const ProjectDetails({Key? key}) : super(key: key);
+  ProjectDetails(
+      {required this.projectName,
+      required this.description,
+      required this.startDate,
+      required this.startUpCost});
+
+  final String projectName;
+  String description;
+  String startDate;
+  String startUpCost;
 
   @override
   State<ProjectDetails> createState() => _ProjectDetailsState();
@@ -24,7 +33,7 @@ class _ProjectDetailsState extends State<ProjectDetails> {
               children: [
                 Center(
                   child: Text(
-                    'Project Name',
+                    widget.projectName,
                     style: TextStyle(
                       fontSize: kTitleFontSize,
                       color: kBottomAppColor,
@@ -55,7 +64,7 @@ class _ProjectDetailsState extends State<ProjectDetails> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Start Date: 13/01/2024',
+                            'Start Date: ' + widget.startDate,
                             style: TextStyle(
                               fontSize: kNormalFontSize,
                               color: kBottomAppColor,
@@ -65,7 +74,7 @@ class _ProjectDetailsState extends State<ProjectDetails> {
                             height: 10,
                           ),
                           Text(
-                            'Start Up Cost: 20,000',
+                            'Start Up Cost: ' + widget.startUpCost,
                             style: TextStyle(
                               fontSize: kNormalFontSize,
                               color: kBottomAppColor,
@@ -84,7 +93,7 @@ class _ProjectDetailsState extends State<ProjectDetails> {
                           Padding(
                             padding: EdgeInsets.only(left: 20, top: 10),
                             child: Text(
-                              'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris aliquam, nunc nec fermentum aliquam, nulla erat mollis elit, sit amet pretium velit urna a turpis.',
+                              widget.description,
                               style: TextStyle(
                                 fontSize: kNormalFontSize,
                                 color: kBottomAppColor,
@@ -124,3 +133,9 @@ class _ProjectDetailsState extends State<ProjectDetails> {
     );
   }
 }
+
+// formatting the start up cost to currency
+// NumberFormat currencyFormatter =
+//     NumberFormat.currency(locale: 'en_US', symbol: '');
+// String formattedStartUpCost =
+//     currencyFormatter.format(project['startUpCost']);

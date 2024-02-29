@@ -8,7 +8,6 @@ import 'package:project_manager/Screens/ExpenseTracking.dart';
 import 'package:project_manager/Components/ReusableContainer.dart';
 import 'package:project_manager/Screens/ProjectDetails.dart';
 import 'package:project_manager/Screens/RiskAnalysis.dart';
-import 'package:project_manager/Components/CustomButton.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
@@ -43,16 +42,6 @@ class _HomePageState extends State<HomePage> {
       print(e);
     }
   }
-
-  // void getProjects() async {
-  //   final projectsSnapshot = await _firestore.collection('projects').get();
-  //   setState(() {
-  //     projects = projectsSnapshot.docs
-  //         .where((project) => project['user'] == loggedInUser.email)
-  //         .map((project) => project.data() as Map<String, dynamic>)
-  //         .toList();
-  //   });
-  // }
 
   void getProjects() async {
     await for (var snapshot in _firestore.collection('projects').snapshots()) {
@@ -258,22 +247,36 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               if (projects.isEmpty)
-                Center(
-                  child: Text("You do not have any projects"),
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 20),
+                  child: Center(
+                    child: Text(
+                      "You do not have any projects",
+                      style: TextStyle(
+                          fontSize: kNormalFontSize, color: kBottomAppColor),
+                    ),
+                  ),
                 )
               else
                 Column(
                   children: projects.map((project) {
+                    // formatting the date to string
                     Timestamp timestamp = project['startDate'];
                     DateTime startDate = timestamp.toDate();
                     String formattedDate =
                         DateFormat('dd-MM-yyyy').format(startDate);
+
                     return ReusableContainer(
                       label: project['projectName'] ?? '',
                       date: 'Start Date: ' + formattedDate,
                       onButtonPressed: () {
                         // Navigate to project details or any action you want
-                        return ProjectDetails();
+                        return ProjectDetails(
+                          projectName: project['projectName'],
+                          startDate: formattedDate,
+                          startUpCost: project['startUpCost'],
+                          description: project['description'],
+                        );
                       },
                     );
                   }).toList(),
