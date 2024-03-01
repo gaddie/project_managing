@@ -1,6 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:project_manager/HomePage.dart';
+import 'package:project_manager/Screens/HomePage.dart';
 import 'package:project_manager/Screens/LoginScreen.dart';
 
 Future<void> main() async {

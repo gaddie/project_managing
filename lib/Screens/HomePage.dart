@@ -288,3 +288,19 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
+
+// ProjectBrain project =
+// ProjectBrain(expense: 2000, income: 300);
+// print(project.performance());
+// print(project.percentage());
+
+// ReportsCard(
+//   financialPerfomance: '5,000',
+//   label: 'Project Name',
+//   icon: kDownArrow,
+//   financialPercentage: '20',
+//   iconColour: kRedColor,
+//   onButtonPressed: () {
+//     return ChartsPage();
+//   },
+// ),
