@@ -132,26 +132,28 @@ class _ExpenseTrackingState extends State<ExpenseTracking> {
                   txtColor: kBottomAppColor,
                   bgColor: kLightColor,
                   callBackFunction: () {
-                    setState(() {
-                      if (amount.isEmpty) {
-                        errorMessage = true;
-                      } else {
-                        if (selectedDropdownValue.isNotEmpty) {
-                          errorMessage = false;
-                          _firestore.collection('costs').add({
-                            'user': loggedInUser.email,
-                            'amount': amount,
-                            'description': description,
-                            'expenceType': selectedOption,
-                            'projectName': selectedDropdownValue,
-                          });
-                          MessageHandler.showMessage(context,
-                              'Your amount has been added', kBottomAppColor);
+                    if (mounted) {
+                      setState(() {
+                        if (amount.isEmpty) {
+                          errorMessage = true;
                         } else {
-                          print('you have to create a project');
+                          if (selectedDropdownValue.isNotEmpty) {
+                            errorMessage = false;
+                            _firestore.collection('costs').add({
+                              'user': loggedInUser.email,
+                              'amount': amount,
+                              'description': description,
+                              'expenceType': selectedOption,
+                              'projectName': selectedDropdownValue,
+                            });
+                            MessageHandler.showMessage(context,
+                                'Your amount has been added', kBottomAppColor);
+                          } else {
+                            print('you have to create a project');
+                          }
                         }
-                      }
-                    });
+                      });
+                    }
                   },
                   label: 'Add',
                 ),
