@@ -8,6 +8,7 @@ import 'package:delayed_display/delayed_display.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:project_manager/Components/MessageHandler.dart';
+import '../Components/DateField.dart';
 
 class ExpenseTracking extends StatefulWidget {
   @override
@@ -24,6 +25,7 @@ class _ExpenseTrackingState extends State<ExpenseTracking> {
   bool errorMessage = false;
   String amount = '';
   String description = '';
+  DateTime? spendDate;
 
   @override
   void initState() {
@@ -121,6 +123,14 @@ class _ExpenseTrackingState extends State<ExpenseTracking> {
                     amount = value;
                   },
                 ),
+                DateField(
+                  label: 'Date',
+                  onChanged: (DateTime selectedDate) {
+                    setState(() {
+                      spendDate = selectedDate;
+                    });
+                  },
+                ),
                 ProjectForm(
                   onChanged: (value) {
                     setState(() {
@@ -139,12 +149,16 @@ class _ExpenseTrackingState extends State<ExpenseTracking> {
                         } else {
                           if (selectedDropdownValue.isNotEmpty) {
                             errorMessage = false;
+                            if (spendDate == null) {
+                              spendDate = DateTime.now();
+                            }
                             _firestore.collection('costs').add({
                               'user': loggedInUser.email,
                               'amount': amount,
                               'description': description,
-                              'expenceType': selectedOption,
+                              'expenseType': selectedOption,
                               'projectName': selectedDropdownValue,
+                              'date': spendDate,
                             });
                             MessageHandler.showMessage(context,
                                 'Your amount has been added', kBottomAppColor);

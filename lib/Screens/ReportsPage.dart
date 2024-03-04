@@ -150,7 +150,10 @@ class _ReportsPageState extends State<ReportsPage> {
                         iconColour:
                             financialPerformance >= 0 ? kGreenColor : kRedColor,
                         onButtonPressed: () {
-                          return ChartsPage();
+                          return ChartsPage(
+                            projectName: project['projectName'],
+                            startUpCost: project['startUpCost'],
+                          );
                         },
                       );
                     }).toList(),

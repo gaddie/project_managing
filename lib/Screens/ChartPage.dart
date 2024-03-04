@@ -6,7 +6,11 @@ import 'package:project_manager/Components/BarChart.dart';
 import 'package:delayed_display/delayed_display.dart';
 
 class ChartsPage extends StatefulWidget {
-  const ChartsPage({Key? key}) : super(key: key);
+  // passsing the project name to the line chart
+  ChartsPage({required this.projectName, required this.startUpCost});
+
+  final String projectName;
+  final String startUpCost;
 
   @override
   State<ChartsPage> createState() => _ChartsPageState();
@@ -38,7 +42,10 @@ class _ChartsPageState extends State<ChartsPage> {
                       ),
                     ),
                   ),
-                  MyLineChart(),
+                  MyLineChart(
+                    projectName: widget.projectName,
+                    startUpCost: widget.startUpCost,
+                  ),
                   CustomButton(
                     txtColor: kLightColor,
                     bgColor: kBottomAppColor,
