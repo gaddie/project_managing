@@ -103,7 +103,7 @@ class _HomePageState extends State<HomePage> {
                 index == 0
                     ? Icons.home_filled
                     : index == 1
-                        ? Icons.notifications
+                        ? Icons.people
                         : index == 2
                             ? Icons.settings
                             : Icons.logout,
@@ -288,19 +288,3 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
-
-// ProjectBrain project =
-// ProjectBrain(expense: 2000, income: 300);
-// print(project.performance());
-// print(project.percentage());
-
-// ReportsCard(
-//   financialPerfomance: '5,000',
-//   label: 'Project Name',
-//   icon: kDownArrow,
-//   financialPercentage: '20',
-//   iconColour: kRedColor,
-//   onButtonPressed: () {
-//     return ChartsPage();
-//   },
-// ),

@@ -1,5 +1,4 @@
 import 'dart:math';
-
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:project_manager/Constants.dart';
@@ -25,6 +24,7 @@ class _MyLineChartState extends State<MyLineChart> {
   late User loggedInUser;
   final _firestore = FirebaseFirestore.instance;
   late List<Map<String, dynamic>> costs = [];
+  List<double> range = [];
 
   @override
   void initState() {
@@ -59,12 +59,9 @@ class _MyLineChartState extends State<MyLineChart> {
       setState(() {
         costs = filteredCosts;
       });
+      updateMaxDataValue();
     }
   }
-
-  // Initialize lists to hold income and expense data for each month
-  List<double> incomeData = List.filled(12, 0.0);
-  List<double> expenseData = List.filled(12, 0.0);
 
   List<Color> gradientColors = [
     kGreenColor,
@@ -174,44 +171,86 @@ class _MyLineChartState extends State<MyLineChart> {
     );
   }
 
+  void updateMaxDataValue() {
+    // Initialize lists to hold income and expense data for each month
+    List<double> incomeData = List.filled(12, 0.0);
+    List<double> expenseData = List.filled(12, 0.0);
+
+    // Parse costs and organize data by month
+    for (var cost in costs) {
+      DateTime date = cost['date'].toDate();
+      int month = date.month - 1;
+
+      if (cost['expenseType'] == 'Income') {
+        incomeData[month] += int.parse(cost['amount']);
+      } else {
+        expenseData[month] += int.parse(cost['amount']);
+      }
+    }
+
+    List<FlSpot> incomeSpots = List.generate(
+        12, (index) => FlSpot(index.toDouble(), incomeData[index]));
+    List<FlSpot> expenseSpots = List.generate(
+        12, (index) => FlSpot(index.toDouble(), expenseData[index]));
+
+    double maxDataValue = incomeData.reduce(max);
+    maxDataValue = max(maxDataValue, expenseData.reduce(max));
+    range = calculateRange(maxDataValue);
+  }
+
   Widget leftTitleWidgets(double value, TitleMeta meta) {
     const style = TextStyle(
         fontWeight: FontWeight.bold, fontSize: 10, color: kChartsTxtColor);
     String text;
     switch (value.toInt()) {
-      case 100:
+      case 1000:
         text = '10K';
         break;
-      case 200:
+      case 2000:
         text = '20k';
         break;
-      case 300:
-        text = '30k';
+      case 3000:
+        text = '12k';
         break;
-      case 400:
+      case 4000:
         text = '40k';
         break;
-      case 500:
+      case 5000:
         text = '50k';
-      case 600:
+      case 6000:
         text = '60K';
         break;
-      case 700:
+      case 7000:
         text = '70k';
         break;
-      case 800:
+      case 8000:
         text = '80k';
         break;
-      case 900:
+      case 9000:
         text = '90k';
         break;
-      case 1000:
+      case 10000:
         text = '100k';
         break;
       default:
         return Container();
     }
+
     return Text(text, style: style, textAlign: TextAlign.left);
+  }
+
+  // calculating the range of the chart
+  List<double> calculateRange(double maxValue) {
+    List<double> points = [];
+    double roundedMaxValue =
+        (maxValue / 100).ceil() * 100; // Round to the nearest hundredth
+
+    double segment = roundedMaxValue / 10;
+
+    for (int i = 1; i <= 10; i++) {
+      points.add(segment * i);
+    }
+    return points;
   }
 
   // income and expense charts
@@ -246,7 +285,7 @@ class _MyLineChartState extends State<MyLineChart> {
         show: true,
         drawVerticalLine: true,
         drawHorizontalLine: true,
-        horizontalInterval: 100,
+        horizontalInterval: range.isNotEmpty && range[0] > 0 ? range[0] : 10,
         verticalInterval: 1,
         getDrawingHorizontalLine: (value) {
           return const FlLine(
@@ -349,7 +388,7 @@ class _MyLineChartState extends State<MyLineChart> {
         show: true,
         drawHorizontalLine: true,
         verticalInterval: 1,
-        horizontalInterval: 100, // setting the intervals of the grid lines
+        horizontalInterval: range.isNotEmpty && range[0] > 0 ? range[0] : 10,
         getDrawingVerticalLine: (value) {
           return const FlLine(
             color: Color(0xff37434d),
