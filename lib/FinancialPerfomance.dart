@@ -10,6 +10,7 @@ class ProjectBrain {
 
   int performance() {
     _performance = income - expense;
+
     if (_performance > 0) {
       return _performance;
     } else if (_performance < 0) {

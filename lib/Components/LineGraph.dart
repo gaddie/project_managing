@@ -45,14 +45,15 @@ class _MyLineChartState extends State<MyLineChart> {
     }
   }
 
-  // fetching the costs from the database.
+  // fetching the costs of the current user from the database.
   void getCosts(String projectName) async {
     await for (var snapshot in _firestore.collection('costs').snapshots()) {
       List<Map<String, dynamic>> filteredCosts = [];
       for (var project in snapshot.docs) {
         Map<String, dynamic> projectData =
             project.data() as Map<String, dynamic>;
-        if (projectData['projectName'] == projectName) {
+        if (projectData['projectName'] == projectName &&
+            projectData['user'] == loggedInUser.email) {
           filteredCosts.add(projectData);
         }
       }

@@ -143,30 +143,34 @@ class _ExpenseTrackingState extends State<ExpenseTracking> {
                   bgColor: kLightColor,
                   callBackFunction: () {
                     if (mounted) {
-                      setState(() {
-                        if (amount.isEmpty) {
+                      if (amount.isEmpty) {
+                        setState(() {
                           errorMessage = true;
-                        } else {
-                          if (selectedDropdownValue.isNotEmpty) {
-                            errorMessage = false;
-                            if (spendDate == null) {
-                              spendDate = DateTime.now();
-                            }
-                            _firestore.collection('costs').add({
-                              'user': loggedInUser.email,
-                              'amount': amount,
-                              'description': description,
-                              'expenseType': selectedOption,
-                              'projectName': selectedDropdownValue,
-                              'date': spendDate,
-                            });
+                        });
+                      } else {
+                        if (selectedDropdownValue.isNotEmpty) {
+                          if (spendDate == null) {
+                            spendDate = DateTime.now();
+                          }
+                          _firestore.collection('costs').add({
+                            'user': loggedInUser.email,
+                            'amount': amount,
+                            'description': description,
+                            'expenseType': selectedOption,
+                            'projectName': selectedDropdownValue,
+                            'date': spendDate,
+                          }).then((_) {
+                            // Show message after adding data to Firestore
                             MessageHandler.showMessage(context,
                                 'Your amount has been added', kBottomAppColor);
-                          } else {
-                            print('you have to create a project');
-                          }
+                          }).catchError((error) {
+                            // Handle error while adding data to Firestore
+                            print('Error adding document: $error');
+                          });
+                        } else {
+                          print('you have to create a project');
                         }
-                      });
+                      }
                     }
                   },
                   label: 'Add',

@@ -115,6 +115,7 @@ class _ReportsPageState extends State<ReportsPage> {
 
                       int totalIncome = 0;
                       int totalExpense = startUpAmount ?? 0;
+
                       for (var cost in projectCosts) {
                         String? amountString =
                             cost['amount']; // assuming 'amount' is a string
@@ -124,7 +125,7 @@ class _ReportsPageState extends State<ReportsPage> {
                         }
 
                         if (amount != null) {
-                          if (cost['expenceType'] == 'Income') {
+                          if (cost['expenseType'] == 'Income') {
                             totalIncome += amount;
                           } else {
                             totalExpense += amount;
@@ -151,6 +152,7 @@ class _ReportsPageState extends State<ReportsPage> {
                             financialPerformance >= 0 ? kGreenColor : kRedColor,
                         onButtonPressed: () {
                           return ChartsPage(
+                            // passing the project name and startUpCost to the charts screen
                             projectName: project['projectName'],
                             startUpCost: project['startUpCost'],
                           );
