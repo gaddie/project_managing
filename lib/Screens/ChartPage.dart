@@ -24,6 +24,8 @@ class _ChartsPageState extends State<ChartsPage> {
   late List<dynamic> range;
   late Map chartSpots;
   bool isLoading = false;
+  List incomeWeekData = [];
+  List expenseWeekData = [];
 
   void getCurrentCost() async {
     setState(() {
@@ -51,12 +53,35 @@ class _ChartsPageState extends State<ChartsPage> {
     List ChartRange = chartData.calculateRange(maxDataValue);
     Map Spots = chartData.chartPoints(matchingCosts);
 
+    List<List<List<double>>> days = chartData.getCostOfWeek(matchingCosts);
+    // Access the income data
+    List<List<double>> incomeData = days[0];
+
+    // Access the expense data
+    List<List<double>> expenseData = days[1];
+
+    // Now you can use incomeData and expenseData separately
+    // print('Income Data:');
+    // print(incomeData);
+    //
+    // print('Expense Data:');
+    // print(expenseData);
+    // // print(days[1]);
+
+    int currentWeekNumber = chartData.getISOWeekNumber(DateTime.now());
+
+    // Access the income data for the current week
+    List<double> currentWeekIncomeData = days[0][currentWeekNumber];
+    List<double> currentWeekExpenseData = days[1][currentWeekNumber];
+
     maximumValue = maxDataValue;
     range = ChartRange;
     chartSpots = Spots;
+    incomeWeekData = currentWeekIncomeData.cast<List<double>>();
+    expenseWeekData = currentWeekExpenseData.cast<List<double>>();
 
     // Introduce a slight delay before setting isLoading to false
-    await Future.delayed(Duration(milliseconds: 500));
+    await Future.delayed(Duration(milliseconds: 1200));
 
     // Set isLoading to false after the data processing is completed
     setState(() {
@@ -81,7 +106,10 @@ class _ChartsPageState extends State<ChartsPage> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                BarChartSample2(),
+                BarChartSample2(
+                  incomeData: incomeWeekData,
+                  expenseData: expenseWeekData,
+                ),
                 SizedBox(
                   height: 20,
                 ),
