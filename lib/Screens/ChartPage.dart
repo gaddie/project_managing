@@ -5,6 +5,7 @@ import 'package:project_manager/Constants.dart';
 import 'package:project_manager/Components/BarChart.dart';
 import 'package:delayed_display/delayed_display.dart';
 import 'package:project_manager/ChartData.dart';
+import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
 class ChartsPage extends StatefulWidget {
   // passsing the project name to the line chart
@@ -22,8 +23,12 @@ class _ChartsPageState extends State<ChartsPage> {
   late double maximumValue;
   late List<dynamic> range;
   late Map chartSpots;
+  bool isLoading = false;
 
-  void getCurrentCost() {
+  void getCurrentCost() async {
+    setState(() {
+      isLoading = true;
+    });
     String targetProjectName = widget.projectName;
     List<Map<String, dynamic>> matchingCosts = [];
 
@@ -49,6 +54,14 @@ class _ChartsPageState extends State<ChartsPage> {
     maximumValue = maxDataValue;
     range = ChartRange;
     chartSpots = Spots;
+
+    // Introduce a slight delay before setting isLoading to false
+    await Future.delayed(Duration(milliseconds: 500));
+
+    // Set isLoading to false after the data processing is completed
+    setState(() {
+      isLoading = false;
+    });
   }
 
   @override
@@ -65,42 +78,41 @@ class _ChartsPageState extends State<ChartsPage> {
       body: SafeArea(
         child: ListView(
           children: [
-            DelayedDisplay(
-              delay: Duration(milliseconds: 100),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  BarChartSample2(),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20),
-                    child: Center(
-                      child: Text(
-                        'Total monthly Income and Expense',
-                        style: TextStyle(fontSize: 18, color: kChartsTxtColor),
-                      ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                BarChartSample2(),
+                SizedBox(
+                  height: 20,
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  child: Center(
+                    child: Text(
+                      'Total monthly Income and Expense',
+                      style: TextStyle(fontSize: 18, color: kChartsTxtColor),
                     ),
                   ),
-                  MyLineChart(
-                    projectName: widget.projectName,
-                    maxValue: maximumValue ?? 0.0,
-                    range: range ?? [],
-                    chartSpots: chartSpots,
-                  ),
-                  CustomButton(
-                    txtColor: kLightColor,
-                    bgColor: kBottomAppColor,
-                    callBackFunction: () {
-                      setState(() {
-                        Navigator.pop(context);
-                      });
-                    },
-                    label: 'Back',
-                  ),
-                ],
-              ),
+                ),
+                // Show a loading indicator
+                MyLineChart(
+                  projectName: widget.projectName,
+                  maxValue: maximumValue ?? 0.0,
+                  range: range ?? [],
+                  chartSpots: chartSpots,
+                  isLoading: isLoading,
+                ),
+                CustomButton(
+                  txtColor: kLightColor,
+                  bgColor: kBottomAppColor,
+                  callBackFunction: () {
+                    setState(() {
+                      Navigator.pop(context);
+                    });
+                  },
+                  label: 'Back',
+                ),
+              ],
             )
           ],
         ),

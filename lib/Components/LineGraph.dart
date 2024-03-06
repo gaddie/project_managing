@@ -1,10 +1,6 @@
-import 'dart:math';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:project_manager/Constants.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:project_manager/ChartData.dart';
 
 class MyLineChart extends StatefulWidget {
   const MyLineChart({
@@ -13,12 +9,14 @@ class MyLineChart extends StatefulWidget {
     required this.maxValue,
     required this.range,
     required this.chartSpots,
+    required this.isLoading,
   }) : super(key: key);
 
   final String projectName;
   final double maxValue;
   final List range;
   final Map chartSpots;
+  final bool isLoading;
 
   @override
   State<MyLineChart> createState() => _MyLineChartState();
@@ -50,9 +48,13 @@ class _MyLineChartState extends State<MyLineChart> {
               top: 24,
               bottom: 12,
             ),
-            child: LineChart(
-              showAvg ? avgData() : mainData(),
-            ),
+            child: widget.isLoading
+                ? Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : LineChart(
+                    showAvg ? avgData() : mainData(),
+                  ),
           ),
         ),
         SizedBox(

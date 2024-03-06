@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:project_manager/Constants.dart';
 import 'package:project_manager/Screens/ChartPage.dart';
