@@ -4,66 +4,27 @@ import 'package:flutter/material.dart';
 import 'package:project_manager/Constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:project_manager/ChartData.dart';
 
 class MyLineChart extends StatefulWidget {
   const MyLineChart({
     Key? key,
     required this.projectName,
-    required this.startUpCost,
+    required this.maxValue,
+    required this.range,
+    required this.chartSpots,
   }) : super(key: key);
 
   final String projectName;
-  final String startUpCost;
+  final double maxValue;
+  final List range;
+  final Map chartSpots;
 
   @override
   State<MyLineChart> createState() => _MyLineChartState();
 }
 
 class _MyLineChartState extends State<MyLineChart> {
-  final _auth = FirebaseAuth.instance;
-  late User loggedInUser;
-  final _firestore = FirebaseFirestore.instance;
-  late List<Map<String, dynamic>> costs = [];
-  List<double> range = [];
-
-  @override
-  void initState() {
-    super.initState();
-    getCurrentUser();
-    getCosts(widget.projectName);
-  }
-
-  //getting the current user
-  void getCurrentUser() async {
-    try {
-      final user = await _auth.currentUser;
-      if (user != null) {
-        loggedInUser = user;
-      }
-    } catch (e) {
-      print(e);
-    }
-  }
-
-  // fetching the costs of the current user from the database.
-  void getCosts(String projectName) async {
-    await for (var snapshot in _firestore.collection('costs').snapshots()) {
-      List<Map<String, dynamic>> filteredCosts = [];
-      for (var project in snapshot.docs) {
-        Map<String, dynamic> projectData =
-            project.data() as Map<String, dynamic>;
-        if (projectData['projectName'] == projectName &&
-            projectData['user'] == loggedInUser.email) {
-          filteredCosts.add(projectData);
-        }
-      }
-      setState(() {
-        costs = filteredCosts;
-      });
-      updateMaxDataValue();
-    }
-  }
-
   List<Color> gradientColors = [
     kGreenColor,
     kGreenColor,
@@ -172,32 +133,8 @@ class _MyLineChartState extends State<MyLineChart> {
     );
   }
 
-  void updateMaxDataValue() {
-    // Initialize lists to hold income and expense data for each month
-    List<double> incomeData = List.filled(12, 0.0);
-    List<double> expenseData = List.filled(12, 0.0);
-
-    // Parse costs and organize data by month
-    for (var cost in costs) {
-      DateTime date = cost['date'].toDate();
-      int month = date.month - 1;
-
-      if (cost['expenseType'] == 'Income') {
-        incomeData[month] += int.parse(cost['amount']);
-      } else {
-        expenseData[month] += int.parse(cost['amount']);
-      }
-    }
-
-    List<FlSpot> incomeSpots = List.generate(
-        12, (index) => FlSpot(index.toDouble(), incomeData[index]));
-    List<FlSpot> expenseSpots = List.generate(
-        12, (index) => FlSpot(index.toDouble(), expenseData[index]));
-
-    double maxDataValue = incomeData.reduce(max);
-    maxDataValue = max(maxDataValue, expenseData.reduce(max));
-    range = calculateRange(maxDataValue);
-  }
+  //------------------------------
+  void updateMaxDataValue() {}
 
   Widget leftTitleWidgets(double value, TitleMeta meta) {
     const style = TextStyle(
@@ -240,6 +177,7 @@ class _MyLineChartState extends State<MyLineChart> {
     return Text(text, style: style, textAlign: TextAlign.left);
   }
 
+  //---------------------------------------------------------
   // calculating the range of the chart
   List<double> calculateRange(double maxValue) {
     List<double> points = [];
@@ -256,37 +194,14 @@ class _MyLineChartState extends State<MyLineChart> {
 
   // income and expense charts
   LineChartData mainData() {
-    // Initialize lists to hold income and expense data for each month
-    List<double> incomeData = List.filled(12, 0.0);
-    List<double> expenseData = List.filled(12, 0.0);
-
-    // Parse costs and organize data by month
-    for (var cost in costs) {
-      DateTime date = cost['date'].toDate();
-      int month = date.month - 1;
-
-      if (cost['expenseType'] == 'Income') {
-        incomeData[month] += int.parse(cost['amount']);
-      } else {
-        expenseData[month] += int.parse(cost['amount']);
-      }
-    }
-
-    // Create FlSpot instances for income and expense data
-    List<FlSpot> incomeSpots = List.generate(
-        12, (index) => FlSpot(index.toDouble(), incomeData[index]));
-    List<FlSpot> expenseSpots = List.generate(
-        12, (index) => FlSpot(index.toDouble(), expenseData[index]));
-
-    double maxDataValue = incomeData.reduce(max);
-    maxDataValue = max(maxDataValue, expenseData.reduce(max));
-
     return LineChartData(
       gridData: FlGridData(
         show: true,
         drawVerticalLine: true,
         drawHorizontalLine: true,
-        horizontalInterval: range.isNotEmpty && range[0] > 0 ? range[0] : 10,
+        horizontalInterval: widget.range.isNotEmpty && widget.range[0] > 0
+            ? widget.range[0]
+            : 10,
         verticalInterval: 1,
         getDrawingHorizontalLine: (value) {
           return const FlLine(
@@ -333,11 +248,11 @@ class _MyLineChartState extends State<MyLineChart> {
       minX: 0,
       maxX: 11,
       minY: 0,
-      maxY: maxDataValue + 100,
+      maxY: widget.maxValue + 100,
       lineBarsData: [
         // Income Data
         LineChartBarData(
-          spots: incomeSpots,
+          spots: widget.chartSpots['incomeSpots'],
           isCurved: false,
           gradient: LinearGradient(
             colors: gradientColors,
@@ -359,7 +274,7 @@ class _MyLineChartState extends State<MyLineChart> {
 
         // expense data
         LineChartBarData(
-          spots: expenseSpots,
+          spots: widget.chartSpots['expenseSpots'],
           isCurved: false,
           gradient: LinearGradient(
             colors: expenseColor,
@@ -389,7 +304,9 @@ class _MyLineChartState extends State<MyLineChart> {
         show: true,
         drawHorizontalLine: true,
         verticalInterval: 1,
-        horizontalInterval: range.isNotEmpty && range[0] > 0 ? range[0] : 10,
+        horizontalInterval: widget.range.isNotEmpty && widget.range[0] > 0
+            ? widget.range[0]
+            : 10,
         getDrawingVerticalLine: (value) {
           return const FlLine(
             color: Color(0xff37434d),

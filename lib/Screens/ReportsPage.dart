@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:project_manager/Constants.dart';
 import 'package:project_manager/Screens/ChartPage.dart';
@@ -154,7 +156,7 @@ class _ReportsPageState extends State<ReportsPage> {
                           return ChartsPage(
                             // passing the project name and startUpCost to the charts screen
                             projectName: project['projectName'],
-                            startUpCost: project['startUpCost'],
+                            costs: costs,
                           );
                         },
                       );
