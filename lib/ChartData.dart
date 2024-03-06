@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 class ChartData {
@@ -70,5 +71,42 @@ class ChartData {
       'incomeSpots': incomeSpots,
       'expenseSpots': expenseSpots,
     };
+  }
+
+  List<List<List<double>>> getCostOfWeek(List<Map<String, dynamic>> costValue) {
+    List<List<double>> incomeData =
+        List.generate(53, (_) => List.filled(7, 0.0));
+    List<List<double>> expenseData =
+        List.generate(53, (_) => List.filled(7, 0.0));
+
+    for (var cost in costValue) {
+      Timestamp timestamp = cost['date'];
+      DateTime date = timestamp.toDate();
+      int weekNumber = getISOWeekNumber(date); // Calculate the ISO week number
+
+      int day =
+          date.weekday - 1; // Get the day of the week (0 - Monday, 6 - Sunday)
+
+      if (cost['expenseType'] == 'Income') {
+        incomeData[weekNumber][day] += double.parse(cost['amount']);
+      } else {
+        expenseData[weekNumber][day] += double.parse(cost['amount']);
+      }
+    }
+
+    return [incomeData, expenseData];
+  }
+
+// Function to calculate the ISO week number
+  int getISOWeekNumber(DateTime date) {
+    DateTime thursday = date.subtract(Duration(days: date.weekday - 1));
+    DateTime firstThursday = DateTime(thursday.year, 1, 4);
+    int weekNumber =
+        1 + ((thursday.difference(firstThursday).inDays) / 7).floor();
+
+    if (weekNumber == 53 && firstThursday.month != 12) {
+      weekNumber = 1;
+    }
+    return weekNumber;
   }
 }

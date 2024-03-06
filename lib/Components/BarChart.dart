@@ -3,7 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:project_manager/Constants.dart';
 
 class BarChartSample2 extends StatefulWidget {
-  BarChartSample2({super.key});
+  BarChartSample2({required this.incomeData, required this.expenseData});
+
+  List incomeData;
+  List expenseData;
+
   final Color leftBarColor = kGreenColor;
   final Color rightBarColor = kRedColor;
   final Color avgColor = kDarkColor;
@@ -22,7 +26,7 @@ class BarChartSample2State extends State<BarChartSample2> {
   @override
   void initState() {
     super.initState();
-    final barGroup1 = makeGroupData(0, 3, 12);
+    final barGroup1 = makeGroupData(0, 6, 3);
     final barGroup2 = makeGroupData(1, 16, 12);
     final barGroup3 = makeGroupData(2, 18, 5);
     final barGroup4 = makeGroupData(3, 20, 16);
@@ -207,6 +211,7 @@ class BarChartSample2State extends State<BarChartSample2> {
     );
   }
 
+  // creating the label on the left
   Widget leftTitles(double value, TitleMeta meta) {
     const style = TextStyle(
       color: Color(0xff7589a2),
@@ -253,20 +258,20 @@ class BarChartSample2State extends State<BarChartSample2> {
     );
   }
 
-  BarChartGroupData makeGroupData(int x, double y1, double y2) {
+  BarChartGroupData makeGroupData(int x, double income, double expense) {
     return BarChartGroupData(
       barsSpace: 4,
       x: x,
       barRods: [
         BarChartRodData(
-          toY: y1,
-          color: widget.leftBarColor,
+          toY: income,
           width: width,
+          color: widget.leftBarColor,
         ),
         BarChartRodData(
-          toY: y2,
-          color: widget.rightBarColor,
+          toY: expense,
           width: width,
+          color: widget.rightBarColor,
         ),
       ],
     );
