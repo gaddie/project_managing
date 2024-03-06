@@ -6,12 +6,12 @@ class ReusableContainer extends StatelessWidget {
   ReusableContainer({
     required this.label,
     required this.onButtonPressed,
-    required this.condition,
+    required this.date,
     this.color,
   });
 
   final String label;
-  final String condition;
+  final String date;
   final Color? color;
   final Widget Function() onButtonPressed;
 
@@ -77,7 +77,7 @@ class ReusableContainer extends StatelessWidget {
                                     color: kBottomAppColor),
                               ),
                               Text(
-                                condition,
+                                date,
                                 style: TextStyle(color: kBottomAppColor),
                               )
                             ],

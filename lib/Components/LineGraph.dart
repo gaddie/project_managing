@@ -3,7 +3,20 @@ import 'package:flutter/material.dart';
 import 'package:project_manager/Constants.dart';
 
 class MyLineChart extends StatefulWidget {
-  const MyLineChart({Key? key}) : super(key: key);
+  const MyLineChart({
+    Key? key,
+    required this.projectName,
+    required this.maxValue,
+    required this.range,
+    required this.chartSpots,
+    required this.isLoading,
+  }) : super(key: key);
+
+  final String projectName;
+  final double maxValue;
+  final List range;
+  final Map chartSpots;
+  final bool isLoading;
 
   @override
   State<MyLineChart> createState() => _MyLineChartState();
@@ -35,9 +48,13 @@ class _MyLineChartState extends State<MyLineChart> {
               top: 24,
               bottom: 12,
             ),
-            child: LineChart(
-              showAvg ? avgData() : mainData(),
-            ),
+            child: widget.isLoading
+                ? Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : LineChart(
+                    showAvg ? avgData() : mainData(),
+                  ),
           ),
         ),
         SizedBox(
@@ -71,40 +88,40 @@ class _MyLineChartState extends State<MyLineChart> {
     );
     Widget text;
     switch (value.toInt()) {
-      case 1:
+      case 0:
         text = const Text('JAN', style: TextStyle(fontSize: 10));
         break;
-      case 2:
+      case 1:
         text = const Text('FEB', style: TextStyle(fontSize: 10));
         break;
-      case 3:
+      case 2:
         text = const Text('MAR', style: TextStyle(fontSize: 10));
         break;
-      case 4:
+      case 3:
         text = const Text('APR', style: TextStyle(fontSize: 10));
         break;
-      case 5:
+      case 4:
         text = const Text('MAY', style: TextStyle(fontSize: 10));
         break;
-      case 6:
+      case 5:
         text = const Text('JUN', style: TextStyle(fontSize: 10));
         break;
-      case 7:
+      case 6:
         text = const Text('JUL', style: TextStyle(fontSize: 10));
         break;
-      case 8:
+      case 7:
         text = const Text('AUG', style: TextStyle(fontSize: 10));
         break;
-      case 9:
+      case 8:
         text = const Text('SEP', style: TextStyle(fontSize: 10));
         break;
-      case 10:
+      case 9:
         text = const Text('OCT', style: TextStyle(fontSize: 10));
         break;
-      case 11:
+      case 10:
         text = const Text('NOV', style: TextStyle(fontSize: 10));
         break;
-      case 12:
+      case 11:
         text = const Text('DEC', style: TextStyle(fontSize: 10));
         break;
       default:
@@ -118,38 +135,41 @@ class _MyLineChartState extends State<MyLineChart> {
     );
   }
 
+  //------------------------------
+  void updateMaxDataValue() {}
+
   Widget leftTitleWidgets(double value, TitleMeta meta) {
     const style = TextStyle(
         fontWeight: FontWeight.bold, fontSize: 10, color: kChartsTxtColor);
     String text;
     switch (value.toInt()) {
-      case 1:
+      case 1000:
         text = '10K';
         break;
-      case 2:
+      case 2000:
         text = '20k';
         break;
-      case 3:
-        text = '30k';
+      case 3000:
+        text = '12k';
         break;
-      case 4:
+      case 4000:
         text = '40k';
         break;
-      case 5:
+      case 5000:
         text = '50k';
-      case 6:
+      case 6000:
         text = '60K';
         break;
-      case 7:
+      case 7000:
         text = '70k';
         break;
-      case 8:
+      case 8000:
         text = '80k';
         break;
-      case 9:
+      case 9000:
         text = '90k';
         break;
-      case 10:
+      case 10000:
         text = '100k';
         break;
       default:
@@ -159,13 +179,31 @@ class _MyLineChartState extends State<MyLineChart> {
     return Text(text, style: style, textAlign: TextAlign.left);
   }
 
+  //---------------------------------------------------------
+  // calculating the range of the chart
+  List<double> calculateRange(double maxValue) {
+    List<double> points = [];
+    double roundedMaxValue =
+        (maxValue / 100).ceil() * 100; // Round to the nearest hundredth
+
+    double segment = roundedMaxValue / 10;
+
+    for (int i = 1; i <= 10; i++) {
+      points.add(segment * i);
+    }
+    return points;
+  }
+
   // income and expense charts
   LineChartData mainData() {
     return LineChartData(
       gridData: FlGridData(
         show: true,
         drawVerticalLine: true,
-        horizontalInterval: 1,
+        drawHorizontalLine: true,
+        horizontalInterval: widget.range.isNotEmpty && widget.range[0] > 0
+            ? widget.range[0]
+            : 10,
         verticalInterval: 1,
         getDrawingHorizontalLine: (value) {
           return const FlLine(
@@ -209,30 +247,15 @@ class _MyLineChartState extends State<MyLineChart> {
         show: true,
         border: Border.all(color: const Color(0xff37434d)),
       ),
-      // used for changing the size of the graph before Return on Investment
       minX: 0,
-      maxX: 12,
+      maxX: 11,
       minY: 0,
-      maxY: 11,
+      maxY: widget.maxValue + 100,
       lineBarsData: [
         // Income Data
         LineChartBarData(
-          spots: const [
-            FlSpot(0, 7),
-            FlSpot(1, 6),
-            FlSpot(2, 8),
-            FlSpot(3, 7.5),
-            FlSpot(4, 2),
-            FlSpot(5, 4),
-            FlSpot(6, 5),
-            FlSpot(7, 3),
-            FlSpot(8, 8),
-            FlSpot(9, 1),
-            FlSpot(10, 5),
-            FlSpot(11, 1),
-            FlSpot(12, 4),
-          ],
-          isCurved: true,
+          spots: widget.chartSpots['incomeSpots'],
+          isCurved: false,
           gradient: LinearGradient(
             colors: gradientColors,
           ),
@@ -250,24 +273,11 @@ class _MyLineChartState extends State<MyLineChart> {
             ),
           ),
         ),
-        // Expense Data
+
+        // expense data
         LineChartBarData(
-          spots: const [
-            FlSpot(0, 3),
-            FlSpot(1, 2),
-            FlSpot(2, 5),
-            FlSpot(3, 3.1),
-            FlSpot(4, 4),
-            FlSpot(5, 3),
-            FlSpot(6, 4),
-            FlSpot(7, 3),
-            FlSpot(8, 2),
-            FlSpot(9, 5),
-            FlSpot(10, 3.1),
-            FlSpot(11, 4),
-            FlSpot(12, 3),
-          ],
-          isCurved: true,
+          spots: widget.chartSpots['expenseSpots'],
+          isCurved: false,
           gradient: LinearGradient(
             colors: expenseColor,
           ),
@@ -288,6 +298,7 @@ class _MyLineChartState extends State<MyLineChart> {
     );
   }
 
+  // getting the average of the income and the expenses
   LineChartData avgData() {
     return LineChartData(
       lineTouchData: const LineTouchData(enabled: false),
@@ -295,7 +306,9 @@ class _MyLineChartState extends State<MyLineChart> {
         show: true,
         drawHorizontalLine: true,
         verticalInterval: 1,
-        horizontalInterval: 1,
+        horizontalInterval: widget.range.isNotEmpty && widget.range[0] > 0
+            ? widget.range[0]
+            : 10,
         getDrawingVerticalLine: (value) {
           return const FlLine(
             color: Color(0xff37434d),

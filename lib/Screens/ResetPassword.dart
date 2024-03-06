@@ -4,7 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:project_manager/Components/InputField.dart';
 import 'package:project_manager/Components/CustomButton.dart';
 import 'package:project_manager/Constants.dart';
-import 'package:project_manager/HomePage.dart';
+import 'package:project_manager/Screens/HomePage.dart';
 
 class ResetPassword extends StatefulWidget {
   const ResetPassword({Key? key}) : super(key: key);

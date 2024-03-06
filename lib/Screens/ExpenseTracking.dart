@@ -5,6 +5,10 @@ import 'package:project_manager/Components/DropdownMenu.dart';
 import 'package:project_manager/Components/InputField.dart';
 import 'package:project_manager/Components/TextField.dart';
 import 'package:delayed_display/delayed_display.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:project_manager/Components/MessageHandler.dart';
+import '../Components/DateField.dart';
 
 class ExpenseTracking extends StatefulWidget {
   @override
@@ -12,9 +16,34 @@ class ExpenseTracking extends StatefulWidget {
 }
 
 class _ExpenseTrackingState extends State<ExpenseTracking> {
+  final _firestore = FirebaseFirestore.instance;
   String selectedOption = 'Income';
-  String selectedDropdownValue =
-      'Option 1'; // Default selected value for the dropdown
+  late String selectedDropdownValue;
+  final _auth = FirebaseAuth.instance;
+  late User loggedInUser;
+  late List<Map<String, dynamic>> projects = [];
+  bool errorMessage = false;
+  String amount = '';
+  String description = '';
+  DateTime? spendDate;
+
+  @override
+  void initState() {
+    super.initState();
+    getCurrentUser();
+    selectedDropdownValue = 'Project Name';
+  }
+
+  void getCurrentUser() async {
+    try {
+      final user = await _auth.currentUser;
+      if (user != null) {
+        loggedInUser = user;
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,22 +101,77 @@ class _ExpenseTrackingState extends State<ExpenseTracking> {
                   padding: EdgeInsets.only(left: 20, right: 20, top: 10),
                   child: Text(
                     'Project Name',
-                    style:
-                        TextStyle(color: kDarkColor, fontSize: kNormalFontSize),
+                    style: TextStyle(
+                        color: kBottomAppColor, fontSize: kNormalFontSize),
                   ),
                 ),
                 Padding(
                     padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                    child: MyDropdownMenu()),
-                InputField(label: 'Amount'),
-                ProjectForm(),
+                    child: MyDropdownMenu(
+                      onValueChanged: (value) {
+                        setState(() {
+                          selectedDropdownValue =
+                              value; // Update selected value
+                        });
+                      },
+                    )),
+                InputField(
+                  label: 'Amount',
+                  integerOnly: true,
+                  errorText: errorMessage ? 'This field is required' : null,
+                  onChanged: (value) {
+                    amount = value;
+                  },
+                ),
+                DateField(
+                  label: 'Date',
+                  onChanged: (DateTime selectedDate) {
+                    setState(() {
+                      spendDate = selectedDate;
+                    });
+                  },
+                ),
+                ProjectForm(
+                  onChanged: (value) {
+                    setState(() {
+                      description = value;
+                    });
+                  },
+                ),
                 CustomButton(
                   txtColor: kBottomAppColor,
                   bgColor: kLightColor,
                   callBackFunction: () {
-                    setState(() {
-                      Navigator.pop(context);
-                    });
+                    if (mounted) {
+                      if (amount.isEmpty) {
+                        setState(() {
+                          errorMessage = true;
+                        });
+                      } else {
+                        if (selectedDropdownValue.isNotEmpty) {
+                          if (spendDate == null) {
+                            spendDate = DateTime.now();
+                          }
+                          _firestore.collection('costs').add({
+                            'user': loggedInUser.email,
+                            'amount': amount,
+                            'description': description,
+                            'expenseType': selectedOption,
+                            'projectName': selectedDropdownValue,
+                            'date': spendDate,
+                          }).then((_) {
+                            // Show message after adding data to Firestore
+                            MessageHandler.showMessage(context,
+                                'Your amount has been added', kBottomAppColor);
+                          }).catchError((error) {
+                            // Handle error while adding data to Firestore
+                            print('Error adding document: $error');
+                          });
+                        } else {
+                          print('you have to create a project');
+                        }
+                      }
+                    }
                   },
                   label: 'Add',
                 ),

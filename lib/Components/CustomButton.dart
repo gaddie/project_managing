@@ -21,7 +21,7 @@ class _CustomButtonState extends State<CustomButton> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
       child: ElevatedButton(
         onPressed: () {
           widget.callBackFunction();

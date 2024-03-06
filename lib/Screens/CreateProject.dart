@@ -4,6 +4,10 @@ import 'package:project_manager/Components/InputField.dart';
 import 'package:project_manager/Components/TextField.dart';
 import 'package:project_manager/Components/CustomButton.dart';
 import 'package:delayed_display/delayed_display.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:project_manager/Components/DateField.dart';
+import 'package:project_manager/Components/MessageHandler.dart';
 
 class CreateProject extends StatefulWidget {
   const CreateProject({Key? key}) : super(key: key);
@@ -13,6 +17,34 @@ class CreateProject extends StatefulWidget {
 }
 
 class _CreateProjectState extends State<CreateProject> {
+  final _firestore = FirebaseFirestore.instance;
+
+  String projectName = '';
+  final _auth = FirebaseAuth.instance;
+  late User loggedInUser;
+  DateTime? startDate;
+  String startUpCost = '';
+  String description = '';
+  bool errorMessage = false;
+
+  @override
+  void initState() {
+    super.initState();
+    getCurrentUser();
+  }
+
+  void getCurrentUser() async {
+    try {
+      final user = await _auth.currentUser;
+      if (user != null) {
+        loggedInUser = user;
+        // print(loggedInUser.email);
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,17 +76,61 @@ class _CreateProjectState extends State<CreateProject> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    InputField(label: 'Project Name'),
-                    InputField(label: 'Start Up cost'),
-                    InputField(label: 'Start Date'),
-                    InputField(label: 'End Date'),
-                    ProjectForm(),
+                    InputField(
+                      label: 'Project Name',
+                      errorText: errorMessage ? 'This field is required' : null,
+                      onChanged: (value) {
+                        projectName = value;
+                      },
+                    ),
+                    InputField(
+                      label: 'Start Up cost',
+                      errorText: errorMessage ? 'This field is required' : null,
+                      integerOnly: true,
+                      onChanged: (value) {
+                        startUpCost = value;
+                      },
+                    ),
+                    DateField(
+                      label: 'Start Date',
+                      onChanged: (DateTime selectedDate) {
+                        setState(() {
+                          startDate = selectedDate;
+                        });
+                      },
+                    ),
+                    ProjectForm(
+                      onChanged: (value) {
+                        setState(() {
+                          description = value;
+                        });
+                      },
+                    ),
                     CustomButton(
                       txtColor: kLightColor,
                       bgColor: kBottomAppColor,
                       callBackFunction: () {
                         setState(() {
-                          Navigator.pop(context);
+                          if (projectName.isNotEmpty ||
+                              startUpCost.isNotEmpty ||
+                              description.isNotEmpty) {
+                            if (startDate == null) {
+                              startDate = DateTime.now();
+                            }
+                            errorMessage = false;
+                            _firestore.collection('projects').add({
+                              'user': loggedInUser.email,
+                              'projectName': projectName,
+                              'description': description,
+                              'startUpCost': startUpCost,
+                              'startDate': startDate,
+                            });
+                            MessageHandler.showMessage(context,
+                                'Your has been created', kBottomAppColor);
+                            Navigator.pop(context);
+                          } else {
+                            errorMessage = true;
+                          }
                         });
                       },
                       label: 'Create Project',
