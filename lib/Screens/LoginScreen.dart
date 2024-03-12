@@ -100,8 +100,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           showSpinner = true;
                         });
                         if (isValidEmail(email)) {
-                          final user = await _auth.signInWithEmailAndPassword(
-                              email: email, password: password);
                           try {
                             final user = await _auth.signInWithEmailAndPassword(
                               email: email,
@@ -138,7 +136,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                 },
                               );
                             } else {
-                              // Handle other types of exceptions
                               print(e);
                             }
                           }
