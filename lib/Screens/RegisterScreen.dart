@@ -89,10 +89,34 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 showSpinner = false;
                               });
                             } catch (e) {
-                              print(e);
+                              setState(() {
+                                showSpinner = false;
+                              });
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: Text('Error'),
+                                    content: Text(
+                                        'The email address is already in use by another account'),
+                                    actions: <Widget>[
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context)
+                                              .pop(); // Close the dialog
+                                        },
+                                        child: Text('OK'),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
                             }
                           } else {
                             // Show a dialog if the password is less than 8 characters
+                            setState(() {
+                              showSpinner = false;
+                            });
                             showDialog(
                               context: context,
                               builder: (BuildContext context) {
