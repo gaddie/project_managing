@@ -73,6 +73,28 @@ class ChartData {
     };
   }
 
+  Map<String, List<double>> points(List<dynamic> costValue) {
+    List<double> incomeData = List.filled(12, 0.0);
+    List<double> expenseData = List.filled(12, 0.0);
+
+    // Parse costs and organize data by month
+    for (var cost in costValue) {
+      DateTime date = cost['date'].toDate();
+      int month = date.month - 1;
+
+      if (cost['expenseType'] == 'Income') {
+        incomeData[month] += double.parse(cost['amount']);
+      } else {
+        expenseData[month] += double.parse(cost['amount']);
+      }
+    }
+
+    return {
+      'incomeSpots': incomeData,
+      'expenseSpots': expenseData,
+    };
+  }
+
   List<List<List<double>>> getCostOfWeek(List<Map<String, dynamic>> costValue) {
     List<List<double>> incomeData =
         List.generate(53, (_) => List.filled(7, 0.0));
@@ -109,4 +131,11 @@ class ChartData {
     }
     return weekNumber;
   }
+}
+
+class _SalesData {
+  final String year;
+  final double sales;
+
+  _SalesData(this.year, this.sales);
 }

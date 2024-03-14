@@ -3,16 +3,14 @@ import 'package:project_manager/Components/LineGraph.dart';
 import 'package:project_manager/Components/CustomButton.dart';
 import 'package:project_manager/Constants.dart';
 import 'package:project_manager/Components/BarChart.dart';
-import 'package:delayed_display/delayed_display.dart';
 import 'package:project_manager/ChartData.dart';
-import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
+import 'package:project_manager/NewChart.dart';
 
 class ChartsPage extends StatefulWidget {
   // passsing the project name to the line chart
   ChartsPage({required this.projectName, required this.costs});
 
   final String projectName;
-
   final dynamic costs;
 
   @override
@@ -26,6 +24,8 @@ class _ChartsPageState extends State<ChartsPage> {
   bool isLoading = false;
   List incomeWeekData = [];
   List expenseWeekData = [];
+  List<double> incomeSpotsData = [];
+  List<double> expenseSpotsData = [];
 
   void getCurrentCost() async {
     setState(() {
@@ -55,10 +55,10 @@ class _ChartsPageState extends State<ChartsPage> {
 
     List<List<List<double>>> days = chartData.getCostOfWeek(matchingCosts);
     // Access the income data
-    List<List<double>> incomeData = days[0];
-
-    // Access the expense data
-    List<List<double>> expenseData = days[1];
+    // List<List<double>> incomeData = days[0];
+    //
+    // // Access the expense data
+    // List<List<double>> expenseData = days[1];
 
     // Now you can use incomeData and expenseData separately
     // print('Income Data:');
@@ -79,6 +79,21 @@ class _ChartsPageState extends State<ChartsPage> {
     chartSpots = Spots;
     incomeWeekData = currentWeekIncomeData.cast<List<double>>();
     expenseWeekData = currentWeekExpenseData.cast<List<double>>();
+
+    Map<String, List<double>> pointsData = chartData.points(matchingCosts);
+    // Access the income spots
+    // Access the income spots
+    List<double>? incomeSpots = pointsData['incomeSpots'];
+
+// Access the expense spots
+    List<double>? expenseSpots = pointsData['expenseSpots'];
+
+    // Assign the data
+    if (incomeSpots != null && expenseSpots != null) {
+      // Assign the data
+      incomeSpotsData = incomeSpots;
+      expenseSpotsData = expenseSpots;
+    }
 
     // Introduce a slight delay before setting isLoading to false
     await Future.delayed(Duration(milliseconds: 1200));
@@ -123,12 +138,16 @@ class _ChartsPageState extends State<ChartsPage> {
                   ),
                 ),
                 // Show a loading indicator
-                MyLineChart(
-                  projectName: widget.projectName,
-                  maxValue: maximumValue ?? 0.0,
-                  range: range ?? [],
-                  chartSpots: chartSpots,
-                  isLoading: isLoading,
+                // MyLineChart(
+                //   projectName: widget.projectName,
+                //   maxValue: maximumValue ?? 0.0,
+                //   range: range ?? [],
+                //   chartSpots: chartSpots,
+                //   isLoading: isLoading,
+                // ),
+                ChartApp(
+                  incomeData: incomeSpotsData,
+                  expenseData: expenseSpotsData,
                 ),
                 CustomButton(
                   txtColor: kLightColor,

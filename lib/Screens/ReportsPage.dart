@@ -56,7 +56,7 @@ class _ReportsPageState extends State<ReportsPage> {
     }
   }
 
-  // fetching the costs from the database.
+  // fetching the costs from the database for the year 2024.
   void getCosts() async {
     await for (var snapshot in _firestore.collection('costs').snapshots()) {
       List<Map<String, dynamic>> filteredCosts = [];
@@ -64,7 +64,14 @@ class _ReportsPageState extends State<ReportsPage> {
         Map<String, dynamic> projectData =
             project.data() as Map<String, dynamic>;
         if (projectData['user'] == loggedInUser.email) {
-          filteredCosts.add(projectData);
+          // Assuming 'date' field is a timestamp
+          Timestamp timestamp =
+              projectData['date']; // Accessing date field as timestamp
+          DateTime date =
+              timestamp.toDate(); // Convert Firebase Timestamp to DateTime
+          if (date.year == 2024) {
+            filteredCosts.add(projectData);
+          }
         }
       }
       setState(() {
