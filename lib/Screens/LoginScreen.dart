@@ -115,7 +115,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             setState(() {
                               showSpinner = false;
                             });
-                            print(e);
+
                             // Check if the error is due to invalid credentials
                             if (e is FirebaseAuthException) {
                               showDialog(
@@ -123,7 +123,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 builder: (BuildContext context) {
                                   return AlertDialog(
                                     title: Text('Error'),
-                                    content: Text('${e.message}'),
+                                    content: Text('Invalid email or password!'),
                                     actions: <Widget>[
                                       TextButton(
                                         onPressed: () {

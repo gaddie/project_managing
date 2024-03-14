@@ -3,14 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:project_manager/Constants.dart';
 
 class MyLineChart extends StatefulWidget {
-  const MyLineChart({
-    Key? key,
+  MyLineChart({
     required this.projectName,
     required this.maxValue,
     required this.range,
     required this.chartSpots,
     required this.isLoading,
-  }) : super(key: key);
+  });
 
   final String projectName;
   final double maxValue;
@@ -83,7 +82,7 @@ class _MyLineChartState extends State<MyLineChart> {
   Widget bottomTitleWidgets(double value, TitleMeta meta) {
     const style = TextStyle(
       fontWeight: FontWeight.bold,
-      fontSize: 16,
+      fontSize: 10,
       color: kChartsTxtColor,
     );
     Widget text;
@@ -135,9 +134,6 @@ class _MyLineChartState extends State<MyLineChart> {
     );
   }
 
-  //------------------------------
-  void updateMaxDataValue() {}
-
   Widget leftTitleWidgets(double value, TitleMeta meta) {
     const style = TextStyle(
         fontWeight: FontWeight.bold, fontSize: 10, color: kChartsTxtColor);
@@ -177,21 +173,6 @@ class _MyLineChartState extends State<MyLineChart> {
     }
 
     return Text(text, style: style, textAlign: TextAlign.left);
-  }
-
-  //---------------------------------------------------------
-  // calculating the range of the chart
-  List<double> calculateRange(double maxValue) {
-    List<double> points = [];
-    double roundedMaxValue =
-        (maxValue / 100).ceil() * 100; // Round to the nearest hundredth
-
-    double segment = roundedMaxValue / 10;
-
-    for (int i = 1; i <= 10; i++) {
-      points.add(segment * i);
-    }
-    return points;
   }
 
   // income and expense charts

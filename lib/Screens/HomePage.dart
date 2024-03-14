@@ -202,16 +202,7 @@ class _HomePageState extends State<HomePage> {
                           },
                         ),
                       ),
-                      Container(
-                        width: 303.0,
-                        child: ReusableCard(
-                          label: 'Risk Analysis',
-                          icon: Icons.trending_up,
-                          onButtonPressed: () {
-                            return RiskAnalysis();
-                          },
-                        ),
-                      ),
+
                       SizedBox(
                         width: 15,
                       )
