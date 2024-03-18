@@ -125,8 +125,10 @@ class _CreateProjectState extends State<CreateProject> {
                               'startUpCost': startUpCost,
                               'startDate': startDate,
                             });
-                            MessageHandler.showMessage(context,
-                                'Your has been created', kBottomAppColor);
+                            MessageHandler.showMessage(
+                                context,
+                                'Your project has been created',
+                                kBottomAppColor);
                             Navigator.pop(context);
                           } else {
                             errorMessage = true;

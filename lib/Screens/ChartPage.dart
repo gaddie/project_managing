@@ -1,9 +1,10 @@
+import 'package:delayed_display/delayed_display.dart';
 import 'package:flutter/material.dart';
 import 'package:project_manager/Components/CustomButton.dart';
 import 'package:project_manager/Constants.dart';
 import 'package:project_manager/ChartData.dart';
-import 'package:project_manager/NewChart.dart';
-import 'package:project_manager/NewBarChart.dart';
+import 'package:project_manager/Components/NewChart.dart';
+import 'package:project_manager/Components/NewBarChart.dart';
 
 class ChartsPage extends StatefulWidget {
   // passsing the project name to the line chart
@@ -92,49 +93,52 @@ class _ChartsPageState extends State<ChartsPage> {
       body: SafeArea(
         child: ListView(
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  child: Center(
-                    child: Text(
-                      'Total weekly spend',
-                      style: TextStyle(fontSize: 18, color: kChartsTxtColor),
+            DelayedDisplay(
+              delay: Duration(microseconds: 400),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: Center(
+                      child: Text(
+                        'Total weekly spend',
+                        style: TextStyle(fontSize: 18, color: kChartsTxtColor),
+                      ),
                     ),
                   ),
-                ),
-                BarChartApp(
-                  weeklyExpense: expenseWeekData,
-                  weeklyIncome: incomeWeekData,
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  child: Center(
-                    child: Text(
-                      'Total monthly Income and Expense',
-                      style: TextStyle(fontSize: 18, color: kChartsTxtColor),
+                  BarChartApp(
+                    weeklyExpense: expenseWeekData,
+                    weeklyIncome: incomeWeekData,
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: Center(
+                      child: Text(
+                        'Total monthly Income and Expense',
+                        style: TextStyle(fontSize: 18, color: kChartsTxtColor),
+                      ),
                     ),
                   ),
-                ),
-                ChartApp(
-                  incomeData: incomeSpotsData,
-                  expenseData: expenseSpotsData,
-                ),
-                CustomButton(
-                  txtColor: kLightColor,
-                  bgColor: kBottomAppColor,
-                  callBackFunction: () {
-                    setState(() {
-                      Navigator.pop(context);
-                    });
-                  },
-                  label: 'Back',
-                ),
-              ],
+                  ChartApp(
+                    incomeData: incomeSpotsData,
+                    expenseData: expenseSpotsData,
+                  ),
+                  CustomButton(
+                    txtColor: kLightColor,
+                    bgColor: kBottomAppColor,
+                    callBackFunction: () {
+                      setState(() {
+                        Navigator.pop(context);
+                      });
+                    },
+                    label: 'Back',
+                  ),
+                ],
+              ),
             )
           ],
         ),

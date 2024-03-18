@@ -1,3 +1,4 @@
+import 'package:delayed_display/delayed_display.dart';
 import 'package:flutter/material.dart';
 import 'package:project_manager/Constants.dart';
 import 'package:project_manager/Screens/ChartPage.dart';
@@ -87,97 +88,102 @@ class _ReportsPageState extends State<ReportsPage> {
       body: SafeArea(
         child: ListView(
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                if (projects.isEmpty)
-                  Padding(
-                    padding: EdgeInsets.symmetric(vertical: 20),
-                    child: Center(
-                      child: Text(
-                        "You do not have any projects",
-                        style: TextStyle(
-                          fontSize: kNormalFontSize,
-                          color: kBottomAppColor,
+            DelayedDisplay(
+              delay: Duration(microseconds: 200),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (projects.isEmpty)
+                    Padding(
+                      padding: EdgeInsets.symmetric(vertical: 20),
+                      child: Center(
+                        child: Text(
+                          "You do not have any projects",
+                          style: TextStyle(
+                            fontSize: kNormalFontSize,
+                            color: kBottomAppColor,
+                          ),
                         ),
                       ),
-                    ),
-                  )
-                else
-                  Column(
-                    children: projects.map((project) {
-                      // Find costs related to the current project
-                      List<Map<String, dynamic>> projectCosts = costs
-                          .where((cost) =>
-                              cost['projectName'] == project['projectName'])
-                          .toList();
+                    )
+                  else
+                    Column(
+                      children: projects.map((project) {
+                        // Find costs related to the current project
+                        List<Map<String, dynamic>> projectCosts = costs
+                            .where((cost) =>
+                                cost['projectName'] == project['projectName'])
+                            .toList();
 
-                      // Calculate total income and expenses for the project
-                      String? startUpCostString = project[
-                          'startUpCost']; // assuming 'amount' is a string
-                      int? startUpAmount;
-                      if (startUpCostString != null) {
-                        startUpAmount = int.tryParse(startUpCostString);
-                      }
-
-                      int totalIncome = 0;
-                      int totalExpense = startUpAmount ?? 0;
-
-                      for (var cost in projectCosts) {
-                        String? amountString =
-                            cost['amount']; // assuming 'amount' is a string
-                        int? amount;
-                        if (amountString != null) {
-                          amount = int.tryParse(amountString);
+                        // Calculate total income and expenses for the project
+                        String? startUpCostString = project[
+                            'startUpCost']; // assuming 'amount' is a string
+                        int? startUpAmount;
+                        if (startUpCostString != null) {
+                          startUpAmount = int.tryParse(startUpCostString);
                         }
 
-                        if (amount != null) {
-                          if (cost['expenseType'] == 'Income') {
-                            totalIncome += amount;
-                          } else {
-                            totalExpense += amount;
+                        int totalIncome = 0;
+                        int totalExpense = startUpAmount ?? 0;
+
+                        for (var cost in projectCosts) {
+                          String? amountString =
+                              cost['amount']; // assuming 'amount' is a string
+                          int? amount;
+                          if (amountString != null) {
+                            amount = int.tryParse(amountString);
+                          }
+
+                          if (amount != null) {
+                            if (cost['expenseType'] == 'Income') {
+                              totalIncome += amount;
+                            } else {
+                              totalExpense += amount;
+                            }
                           }
                         }
-                      }
 
-                      // Create a ProjectBrain instance for the current project
-                      ProjectBrain projectBrain = ProjectBrain(
-                        expense: totalExpense,
-                        income: totalIncome,
-                      );
+                        // Create a ProjectBrain instance for the current project
+                        ProjectBrain projectBrain = ProjectBrain(
+                          expense: totalExpense,
+                          income: totalIncome,
+                        );
 
-                      int financialPerformance = projectBrain.performance();
-                      String financialPercentage =
-                          projectBrain.percentage().toString();
+                        int financialPerformance = projectBrain.performance();
+                        String financialPercentage =
+                            projectBrain.percentage().toString();
 
-                      return ReportsCard(
-                        financialPerfomance: financialPerformance.toString(),
-                        label: project['projectName'],
-                        icon: financialPerformance >= 0 ? kUpArrow : kDownArrow,
-                        financialPercentage: financialPercentage,
-                        iconColour:
-                            financialPerformance >= 0 ? kGreenColor : kRedColor,
-                        onButtonPressed: () {
-                          return ChartsPage(
-                            // passing the project name and startUpCost to the charts screen
-                            projectName: project['projectName'],
-                            costs: costs,
-                          );
-                        },
-                      );
-                    }).toList(),
+                        return ReportsCard(
+                          financialPerfomance: financialPerformance.toString(),
+                          label: project['projectName'],
+                          icon:
+                              financialPerformance >= 0 ? kUpArrow : kDownArrow,
+                          financialPercentage: financialPercentage,
+                          iconColour: financialPerformance >= 0
+                              ? kGreenColor
+                              : kRedColor,
+                          onButtonPressed: () {
+                            return ChartsPage(
+                              // passing the project name and startUpCost to the charts screen
+                              projectName: project['projectName'],
+                              costs: costs,
+                            );
+                          },
+                        );
+                      }).toList(),
+                    ),
+                  CustomButton(
+                    txtColor: kLightColor,
+                    bgColor: kBottomAppColor,
+                    callBackFunction: () {
+                      setState(() {
+                        Navigator.pop(context);
+                      });
+                    },
+                    label: 'Back',
                   ),
-                CustomButton(
-                  txtColor: kLightColor,
-                  bgColor: kBottomAppColor,
-                  callBackFunction: () {
-                    setState(() {
-                      Navigator.pop(context);
-                    });
-                  },
-                  label: 'Back',
-                ),
-              ],
+                ],
+              ),
             )
           ],
         ),

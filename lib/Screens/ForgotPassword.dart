@@ -18,6 +18,12 @@ class _ForgotPasswordState extends State<ForgotPassword> {
   String email = '';
   bool showSpinner = false;
 
+  bool isValidEmail(String email) {
+    // Regular expression for email validation
+    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+    return emailRegex.hasMatch(email);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,20 +59,52 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                       txtColor: kLightColor,
                       bgColor: kBottomAppColor,
                       callBackFunction: () async {
-                        try {
+                        if (isValidEmail(email)) {
+                          try {
+                            setState(() {
+                              showSpinner = true;
+                            });
+                            await FirebaseAuth.instance
+                                .sendPasswordResetEmail(email: email);
+                            // Password reset email sent successfully
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text('Success'),
+                                  content: Text(
+                                      'A reset link has been sent to ${email}'),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context)
+                                            .pop(); // Close the dialog
+                                      },
+                                      child: Text('OK'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                            setState(
+                              () {
+                                showSpinner = false;
+                              },
+                            );
+                          } catch (e) {
+                            // Handle errors
+                            print(e);
+                          }
+                        } else {
                           setState(() {
-                            showSpinner = true;
+                            showSpinner = false;
                           });
-                          await FirebaseAuth.instance
-                              .sendPasswordResetEmail(email: email);
-                          // Password reset email sent successfully
                           showDialog(
                             context: context,
                             builder: (BuildContext context) {
                               return AlertDialog(
-                                title: Text('Success'),
-                                content: Text(
-                                    'A reset link has been sent to ${email}'),
+                                title: Text('Error'),
+                                content: Text('Invalid Email'),
                                 actions: <Widget>[
                                   TextButton(
                                     onPressed: () {
@@ -79,12 +117,6 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                               );
                             },
                           );
-                          setState(() {
-                            showSpinner = false;
-                          });
-                        } catch (e) {
-                          // Handle errors
-                          print(e);
                         }
                       },
                       label: 'Reset Email',

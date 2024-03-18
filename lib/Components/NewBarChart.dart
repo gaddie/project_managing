@@ -72,14 +72,14 @@ class _BarChartAppState extends State<BarChartApp> {
           xValueMapper: (_ChartData data, _) => data.x,
           yValueMapper: (_ChartData data, _) => data.y,
           name: 'Expense',
-          color: Colors.red, // Adjust color as needed
+          color: kRedColor, // Adjust color as needed
         ),
         ColumnSeries<_ChartData, String>(
           dataSource: income,
           xValueMapper: (_ChartData data, _) => data.x,
           yValueMapper: (_ChartData data, _) => data.y,
           name: 'Income',
-          color: Colors.green, // Adjust color as needed
+          color: kGreenColor, // Adjust color as needed
         )
       ],
     );
