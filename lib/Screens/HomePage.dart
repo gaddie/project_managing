@@ -7,10 +7,10 @@ import 'package:project_manager/Components/ReusableCard.dart';
 import 'package:project_manager/Screens/ExpenseTracking.dart';
 import 'package:project_manager/Components/ReusableContainer.dart';
 import 'package:project_manager/Screens/ProjectDetails.dart';
-import 'package:project_manager/Screens/RiskAnalysis.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+import 'package:project_manager/Components/CustomButton.dart';
 
 class HomePage extends StatefulWidget {
   static const String id = 'homePage';
@@ -50,6 +50,8 @@ class _HomePageState extends State<HomePage> {
         Map<String, dynamic> projectData =
             project.data() as Map<String, dynamic>;
         if (projectData['user'] == loggedInUser.email) {
+          // Add projectId to the projectData map
+          projectData['projectId'] = project.id;
           filteredProjects.add(projectData);
         }
       }
@@ -263,6 +265,7 @@ class _HomePageState extends State<HomePage> {
                       onButtonPressed: () {
                         // Navigate to project details or any action you want
                         return ProjectDetails(
+                          projectId: project['projectId'],
                           projectName: project['projectName'],
                           startDate: formattedDate,
                           startUpCost: project['startUpCost'],

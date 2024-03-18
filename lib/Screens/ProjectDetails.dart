@@ -2,140 +2,168 @@ import 'package:flutter/material.dart';
 import 'package:project_manager/Constants.dart';
 import 'package:delayed_display/delayed_display.dart';
 import 'package:project_manager/Components/CustomButton.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:project_manager/Components/MessageHandler.dart';
 
-class ProjectDetails extends StatefulWidget {
-  ProjectDetails(
-      {required this.projectName,
-      required this.description,
-      required this.startDate,
-      required this.startUpCost});
+class ProjectDetails extends StatelessWidget {
+  ProjectDetails({
+    required this.projectId,
+    required this.projectName,
+    required this.description,
+    required this.startDate,
+    required this.startUpCost,
+  });
 
+  final String projectId;
   final String projectName;
-  String description;
-  String startDate;
-  String startUpCost;
+  final String description;
+  final String startDate;
+  final String startUpCost;
 
-  @override
-  State<ProjectDetails> createState() => _ProjectDetailsState();
-}
+  // Function to delete the project
+  void deleteProject(BuildContext context) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('projects')
+          .doc(projectId)
+          .delete();
+      MessageHandler.showMessage(
+          context, 'Your project has been deleted', kBottomAppColor);
+      Navigator.pop(context); // Navigate back after deletion
+    } catch (e) {
+      print('Error deleting project: $e');
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Error'),
+            content: Text('Error in deleting this project'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close the dialog
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
 
-class _ProjectDetailsState extends State<ProjectDetails> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kBgLightColor,
-      body: SafeArea(
-        child: DelayedDisplay(
-          delay: Duration(microseconds: 200),
-          child: ListView(children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Center(
-                  child: Text(
-                    widget.projectName,
-                    style: TextStyle(
-                      fontSize: kTitleFontSize,
-                      color: kBottomAppColor,
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: kBgLightColor,
-                      borderRadius: BorderRadius.circular(
-                          20), // Optionally, set border radius for rounded corners
-                      boxShadow: [
-                        BoxShadow(
-                          color: kBottomAppColor.withOpacity(
-                              0.3), // Set shadow color with 30% opacity
-                          spreadRadius: 2,
-                          blurRadius: 5,
-                          offset: Offset(0, 2), // Set shadow offset
-                        ),
-                      ],
-                    ),
-                    child: Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Start Date: ' + widget.startDate,
-                            style: TextStyle(
-                              fontSize: kNormalFontSize,
-                              color: kBottomAppColor,
-                            ),
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            expandedHeight: 200,
+            pinned: true,
+            iconTheme: IconThemeData(
+              color: kBottomAppColor, // Change the back arrow color
+            ),
+            flexibleSpace: FlexibleSpaceBar(
+              titlePadding: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+              title: Text(
+                projectName,
+                style: TextStyle(color: kBottomAppColor),
+              ),
+              background: Image.asset(
+                'images/app.jpeg',
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: DelayedDisplay(
+              delay: Duration(microseconds: 200),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: kBgLightColor,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: kBottomAppColor.withOpacity(0.3),
+                            spreadRadius: 2,
+                            blurRadius: 5,
+                            offset: Offset(0, 2),
                           ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Text(
-                            'Start Up Cost: ' + widget.startUpCost,
-                            style: TextStyle(
-                              fontSize: kNormalFontSize,
-                              color: kBottomAppColor,
-                            ),
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Text(
-                            'Description:',
-                            style: TextStyle(
-                              fontSize: kNormalFontSize,
-                              color: kBottomAppColor,
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(left: 20, top: 10),
-                            child: Text(
-                              widget.description,
+                        ],
+                      ),
+                      child: Padding(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Start Date: $startDate',
                               style: TextStyle(
                                 fontSize: kNormalFontSize,
                                 color: kBottomAppColor,
                               ),
                             ),
-                          ),
-                        ],
+                            SizedBox(height: 10),
+                            Text(
+                              'Start Up Cost: $startUpCost',
+                              style: TextStyle(
+                                fontSize: kNormalFontSize,
+                                color: kBottomAppColor,
+                              ),
+                            ),
+                            SizedBox(height: 10),
+                            Text(
+                              'Description:',
+                              style: TextStyle(
+                                fontSize: kNormalFontSize,
+                                color: kBottomAppColor,
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(left: 20, top: 10),
+                              child: Text(
+                                description,
+                                style: TextStyle(
+                                  fontSize: kNormalFontSize,
+                                  color: kBottomAppColor,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-                CustomButton(
-                  txtColor: kLightColor,
-                  bgColor: kRedColor,
-                  callBackFunction: () {
-                    setState(() {
+                  CustomButton(
+                    txtColor: kLightColor,
+                    bgColor: kRedColor,
+                    callBackFunction: () {
+                      // Call deleteProject function when delete button is pressed
+                      deleteProject(context);
+                    },
+                    label: 'Delete',
+                  ),
+                  CustomButton(
+                    txtColor: kLightColor,
+                    bgColor: kBottomAppColor,
+                    callBackFunction: () {
                       Navigator.pop(context);
-                    });
-                  },
-                  label: 'Delete',
-                ),
-                CustomButton(
-                  txtColor: kLightColor,
-                  bgColor: kBottomAppColor,
-                  callBackFunction: () {
-                    setState(() {
-                      Navigator.pop(context);
-                    });
-                  },
-                  label: 'Back',
-                ),
-              ],
+                    },
+                    label: 'Back',
+                  ),
+                ],
+              ),
             ),
-          ]),
-        ),
+          ),
+        ],
       ),
     );
   }
 }
-
-// formatting the start up cost to currency
-// NumberFormat currencyFormatter =
-//     NumberFormat.currency(locale: 'en_US', symbol: '');
-// String formattedStartUpCost =
-//     currencyFormatter.format(project['startUpCost']);

@@ -1,6 +1,6 @@
-import 'package:delayed_display/delayed_display.dart';
 import 'package:flutter/material.dart';
 import 'package:project_manager/Constants.dart';
+import 'package:delayed_display/delayed_display.dart';
 import 'package:project_manager/Screens/ChartPage.dart';
 import 'package:project_manager/Components/ReportsCard.dart';
 import 'package:project_manager/Components/CustomButton.dart';
@@ -85,10 +85,27 @@ class _ReportsPageState extends State<ReportsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kBgLightColor,
-      body: SafeArea(
-        child: ListView(
-          children: [
-            DelayedDisplay(
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            expandedHeight: 150,
+            floating: true,
+            iconTheme: IconThemeData(color: kBottomAppColor),
+            pinned: true,
+            flexibleSpace: FlexibleSpaceBar(
+              titlePadding: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+              title: Text(
+                "Reports",
+                style: TextStyle(color: kBottomAppColor),
+              ),
+              background: Image.asset(
+                'images/app.jpeg',
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: DelayedDisplay(
               delay: Duration(microseconds: 200),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -184,9 +201,9 @@ class _ReportsPageState extends State<ReportsPage> {
                   ),
                 ],
               ),
-            )
-          ],
-        ),
+            ),
+          ),
+        ],
       ),
     );
   }
