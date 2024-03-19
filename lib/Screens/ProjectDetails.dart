@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:project_manager/Constants.dart';
 import 'package:delayed_display/delayed_display.dart';
 import 'package:project_manager/Components/CustomButton.dart';
@@ -110,7 +112,7 @@ class _ProjectDetailsState extends State<ProjectDetails> {
         child: CustomScrollView(
           slivers: [
             SliverAppBar(
-              expandedHeight: 200,
+              expandedHeight: 100,
               pinned: true,
               iconTheme: IconThemeData(
                 color: kBottomAppColor, // Change the back arrow color
@@ -122,9 +124,8 @@ class _ProjectDetailsState extends State<ProjectDetails> {
                   widget.projectName,
                   style: TextStyle(color: kBottomAppColor),
                 ),
-                background: Image.asset(
-                  'images/app.jpeg',
-                  fit: BoxFit.cover,
+                background: Container(
+                  color: kLightColor,
                 ),
               ),
             ),
@@ -134,16 +135,126 @@ class _ProjectDetailsState extends State<ProjectDetails> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    Row(
+                      // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        // start date
+                        Expanded(
+                          child: Padding(
+                            padding:
+                                EdgeInsets.only(top: 10, left: 10, right: 10),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: kLightColor,
+                                borderRadius: BorderRadius.circular(20),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: kGreyColor.withOpacity(0.3),
+                                    spreadRadius: 2,
+                                    blurRadius: 5,
+                                    offset: Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 20),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Column(
+                                      children: [
+                                        Center(
+                                          child: Text(
+                                            'Start Date',
+                                            style: TextStyle(
+                                              fontSize: kNormalFontSize,
+                                              color: kBottomAppColor,
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          height: 5,
+                                        ),
+                                        Center(
+                                          child: Text(
+                                            ' ${widget.startDate}',
+                                            style: TextStyle(
+                                              fontSize: kNormalFontSize,
+                                              color: kBottomAppColor,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        // start up cost
+                        Expanded(
+                          child: Padding(
+                            padding: EdgeInsets.only(top: 10, right: 10),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: kLightColor,
+                                borderRadius: BorderRadius.circular(20),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: kGreyColor.withOpacity(0.3),
+                                    spreadRadius: 2,
+                                    blurRadius: 5,
+                                    offset: Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 20),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Center(
+                                      child: Text(
+                                        'Start Up Cost',
+                                        style: TextStyle(
+                                          fontSize: kNormalFontSize,
+                                          color: kBottomAppColor,
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 5,
+                                    ),
+                                    Center(
+                                      child: Text(
+                                        '${widget.startUpCost}',
+                                        style: TextStyle(
+                                          fontSize: kNormalFontSize,
+                                          color: kBottomAppColor,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    // description
                     Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                      padding: EdgeInsets.only(left: 10, right: 10, top: 10),
                       child: Container(
                         decoration: BoxDecoration(
-                          color: kBgLightColor,
+                          color: kLightColor,
                           borderRadius: BorderRadius.circular(20),
                           boxShadow: [
                             BoxShadow(
-                              color: kBottomAppColor.withOpacity(0.3),
+                              color: kGreyColor.withOpacity(0.3),
                               spreadRadius: 2,
                               blurRadius: 5,
                               offset: Offset(0, 2),
@@ -151,36 +262,23 @@ class _ProjectDetailsState extends State<ProjectDetails> {
                           ],
                         ),
                         child: Padding(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 20),
+                          padding:
+                              EdgeInsets.only(top: 10, left: 10, right: 10),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                'Start Date: ${widget.startDate}',
-                                style: TextStyle(
-                                  fontSize: kNormalFontSize,
-                                  color: kBottomAppColor,
-                                ),
-                              ),
-                              SizedBox(height: 10),
-                              Text(
-                                'Start Up Cost: ${widget.startUpCost}',
-                                style: TextStyle(
-                                  fontSize: kNormalFontSize,
-                                  color: kBottomAppColor,
-                                ),
-                              ),
-                              SizedBox(height: 10),
-                              Text(
-                                'Description:',
-                                style: TextStyle(
-                                  fontSize: kNormalFontSize,
-                                  color: kBottomAppColor,
+                              Center(
+                                child: Text(
+                                  'Description',
+                                  style: TextStyle(
+                                    fontSize: kNormalFontSize,
+                                    color: kBottomAppColor,
+                                  ),
                                 ),
                               ),
                               Padding(
-                                padding: EdgeInsets.only(left: 20, top: 10),
+                                padding: EdgeInsets.only(
+                                    left: 10, top: 10, bottom: 20),
                                 child: Text(
                                   widget.description,
                                   style: TextStyle(
@@ -194,6 +292,7 @@ class _ProjectDetailsState extends State<ProjectDetails> {
                         ),
                       ),
                     ),
+                    // delete button
                     CustomButton(
                       txtColor: kLightColor,
                       bgColor: kRedColor,

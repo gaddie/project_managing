@@ -88,7 +88,7 @@ class _ReportsPageState extends State<ReportsPage> {
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
-            expandedHeight: 150,
+            expandedHeight: 100,
             floating: true,
             iconTheme: IconThemeData(color: kBottomAppColor),
             pinned: true,
@@ -98,9 +98,8 @@ class _ReportsPageState extends State<ReportsPage> {
                 "Reports",
                 style: TextStyle(color: kBottomAppColor),
               ),
-              background: Image.asset(
-                'images/app.jpeg',
-                fit: BoxFit.cover,
+              background: Container(
+                color: kLightColor,
               ),
             ),
           ),
