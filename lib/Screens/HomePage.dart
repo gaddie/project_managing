@@ -29,7 +29,7 @@ class _HomePageState extends State<HomePage> {
         closedColor: kBottomAppColor,
         transitionType: ContainerTransitionType.fade,
         openBuilder: (BuildContext context, VoidCallback _) {
-          return CreateProject(); // Replace with the actual page you want to show
+          return CreateProject();
         },
         closedElevation: 6.0,
         closedShape: const RoundedRectangleBorder(
@@ -65,7 +65,6 @@ class _HomePageState extends State<HomePage> {
               icon: Icon(
                 Icons.home,
                 color: _selectedIndex == 0 ? kDarkColor : kLightColor,
-                size: _selectedIndex == 0 ? 35 : 25,
               ),
               onPressed: () {
                 setState(() {
@@ -80,7 +79,6 @@ class _HomePageState extends State<HomePage> {
               icon: Icon(
                 Icons.people,
                 color: _selectedIndex == 1 ? kDarkColor : kLightColor,
-                size: _selectedIndex == 1 ? 35 : 25,
               ),
               onPressed: () {
                 setState(() {
@@ -95,7 +93,6 @@ class _HomePageState extends State<HomePage> {
               icon: Icon(
                 Icons.settings,
                 color: _selectedIndex == 2 ? kDarkColor : kLightColor,
-                size: _selectedIndex == 2 ? 35 : 25,
               ),
               onPressed: () {
                 setState(() {
@@ -110,7 +107,6 @@ class _HomePageState extends State<HomePage> {
               icon: Icon(
                 Icons.logout,
                 color: _selectedIndex == 3 ? kDarkColor : kLightColor,
-                size: _selectedIndex == 3 ? 35 : 25,
               ),
               onPressed: () {
                 setState(() {
