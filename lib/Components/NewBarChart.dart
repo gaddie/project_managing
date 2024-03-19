@@ -52,7 +52,7 @@ class _BarChartAppState extends State<BarChartApp> {
     if (maxY == 0) maxY = 100;
     if (interval == 0) interval = 10;
 
-    _tooltip = TooltipBehavior(enable: true);
+    _tooltip = TooltipBehavior(enable: true, color: kBottomAppColor);
     super.initState();
   }
 

@@ -110,30 +110,32 @@ class _CreateProjectState extends State<CreateProject> {
                       txtColor: kLightColor,
                       bgColor: kBottomAppColor,
                       callBackFunction: () {
-                        setState(() {
-                          if (projectName.isNotEmpty ||
-                              startUpCost.isNotEmpty ||
-                              description.isNotEmpty) {
-                            if (startDate == null) {
-                              startDate = DateTime.now();
+                        if (mounted) {
+                          setState(() {
+                            if (projectName.isNotEmpty ||
+                                startUpCost.isNotEmpty ||
+                                description.isNotEmpty) {
+                              if (startDate == null) {
+                                startDate = DateTime.now();
+                              }
+                              errorMessage = false;
+                              _firestore.collection('projects').add({
+                                'user': loggedInUser.email,
+                                'projectName': projectName,
+                                'description': description,
+                                'startUpCost': startUpCost,
+                                'startDate': startDate,
+                              });
+                              MessageHandler.showMessage(
+                                  context,
+                                  'Your project has been created',
+                                  kBottomAppColor);
+                              Navigator.pop(context);
+                            } else {
+                              errorMessage = true;
                             }
-                            errorMessage = false;
-                            _firestore.collection('projects').add({
-                              'user': loggedInUser.email,
-                              'projectName': projectName,
-                              'description': description,
-                              'startUpCost': startUpCost,
-                              'startDate': startDate,
-                            });
-                            MessageHandler.showMessage(
-                                context,
-                                'Your project has been created',
-                                kBottomAppColor);
-                            Navigator.pop(context);
-                          } else {
-                            errorMessage = true;
-                          }
-                        });
+                          });
+                        }
                       },
                       label: 'Create Project',
                     ),
