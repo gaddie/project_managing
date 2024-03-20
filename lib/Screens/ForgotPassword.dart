@@ -55,25 +55,59 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                         });
                       },
                     ),
-                    CustomButton(
-                      txtColor: kLightColor,
-                      bgColor: kBottomAppColor,
-                      callBackFunction: () async {
-                        if (isValidEmail(email)) {
-                          try {
+                    Padding(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                      child: CustomButton(
+                        txtColor: kLightColor,
+                        bgColor: kBottomAppColor,
+                        callBackFunction: () async {
+                          if (isValidEmail(email)) {
+                            try {
+                              setState(() {
+                                showSpinner = true;
+                              });
+                              await FirebaseAuth.instance
+                                  .sendPasswordResetEmail(email: email);
+                              // Password reset email sent successfully
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: Text('Success'),
+                                    content: Text(
+                                        'A reset link has been sent to ${email}'),
+                                    actions: <Widget>[
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context)
+                                              .pop(); // Close the dialog
+                                        },
+                                        child: Text('OK'),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                              setState(
+                                () {
+                                  showSpinner = false;
+                                },
+                              );
+                            } catch (e) {
+                              // Handle errors
+                              print(e);
+                            }
+                          } else {
                             setState(() {
-                              showSpinner = true;
+                              showSpinner = false;
                             });
-                            await FirebaseAuth.instance
-                                .sendPasswordResetEmail(email: email);
-                            // Password reset email sent successfully
                             showDialog(
                               context: context,
                               builder: (BuildContext context) {
                                 return AlertDialog(
-                                  title: Text('Success'),
-                                  content: Text(
-                                      'A reset link has been sent to ${email}'),
+                                  title: Text('Error'),
+                                  content: Text('Invalid Email'),
                                   actions: <Widget>[
                                     TextButton(
                                       onPressed: () {
@@ -86,50 +120,23 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                                 );
                               },
                             );
-                            setState(
-                              () {
-                                showSpinner = false;
-                              },
-                            );
-                          } catch (e) {
-                            // Handle errors
-                            print(e);
                           }
-                        } else {
-                          setState(() {
-                            showSpinner = false;
-                          });
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: Text('Error'),
-                                content: Text('Invalid Email'),
-                                actions: <Widget>[
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.of(context)
-                                          .pop(); // Close the dialog
-                                    },
-                                    child: Text('OK'),
-                                  ),
-                                ],
-                              );
-                            },
-                          );
-                        }
-                      },
-                      label: 'Reset Email',
+                        },
+                        label: 'Reset Email',
+                      ),
                     ),
-                    CustomButton(
-                      txtColor: kLightColor,
-                      bgColor: kBottomAppColor,
-                      callBackFunction: () {
-                        setState(() {
-                          Navigator.pop(context);
-                        });
-                      },
-                      label: 'Back',
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      child: CustomButton(
+                        txtColor: kLightColor,
+                        bgColor: kBottomAppColor,
+                        callBackFunction: () {
+                          setState(() {
+                            Navigator.pop(context);
+                          });
+                        },
+                        label: 'Back',
+                      ),
                     ),
                   ],
                 ),

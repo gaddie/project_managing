@@ -67,64 +67,88 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         });
                       },
                     ),
-                    CustomButton(
-                      txtColor: kLightColor,
-                      bgColor: kBottomAppColor,
-                      callBackFunction: () async {
-                        setState(() {
-                          showSpinner = true;
-                        });
-                        if (isValidEmail(email)) {
-                          if (password.length >= 8) {
-                            try {
-                              final newUser =
-                                  await _auth.createUserWithEmailAndPassword(
-                                email: email,
-                                password: password,
-                              );
-                              if (newUser != null) {
-                                Navigator.pushNamed(context, '/homePage');
-                              }
-                              setState(() {
-                                showSpinner = false;
-                              });
-                            } catch (e) {
-                              setState(() {
-                                showSpinner = false;
-                              });
-                              if (e is FirebaseAuthException) {
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return AlertDialog(
-                                      title: Text('Error'),
-                                      content: Text('${e.message}'),
-                                      actions: <Widget>[
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.of(context)
-                                                .pop(); // Close the dialog
-                                          },
-                                          child: Text('OK'),
-                                        ),
-                                      ],
-                                    );
-                                  },
+                    Padding(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                      child: CustomButton(
+                        txtColor: kLightColor,
+                        bgColor: kBottomAppColor,
+                        callBackFunction: () async {
+                          setState(() {
+                            showSpinner = true;
+                          });
+                          if (isValidEmail(email)) {
+                            if (password.length >= 8) {
+                              try {
+                                final newUser =
+                                    await _auth.createUserWithEmailAndPassword(
+                                  email: email,
+                                  password: password,
                                 );
+                                if (newUser != null) {
+                                  Navigator.pushNamed(context, '/homePage');
+                                }
+                                setState(() {
+                                  showSpinner = false;
+                                });
+                              } catch (e) {
+                                setState(() {
+                                  showSpinner = false;
+                                });
+                                if (e is FirebaseAuthException) {
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: Text('Error'),
+                                        content: Text('${e.message}'),
+                                        actions: <Widget>[
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.of(context)
+                                                  .pop(); // Close the dialog
+                                            },
+                                            child: Text('OK'),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                }
                               }
+                            } else {
+                              // Show a dialog if the password is less than 8 characters
+                              setState(() {
+                                showSpinner = false;
+                              });
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: Text('Error'),
+                                    content: Text(
+                                        'Password must be at least 8 characters long'),
+                                    actions: <Widget>[
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context)
+                                              .pop(); // Close the dialog
+                                        },
+                                        child: Text('OK'),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
                             }
                           } else {
-                            // Show a dialog if the password is less than 8 characters
-                            setState(() {
-                              showSpinner = false;
-                            });
+                            // Show a dialog if the email is invalid
                             showDialog(
                               context: context,
                               builder: (BuildContext context) {
                                 return AlertDialog(
                                   title: Text('Error'),
-                                  content: Text(
-                                      'Password must be at least 8 characters long'),
+                                  content: Text('Invalid Email'),
                                   actions: <Widget>[
                                     TextButton(
                                       onPressed: () {
@@ -138,37 +162,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               },
                             );
                           }
-                        } else {
-                          // Show a dialog if the email is invalid
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: Text('Error'),
-                                content: Text('Invalid Email'),
-                                actions: <Widget>[
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.of(context)
-                                          .pop(); // Close the dialog
-                                    },
-                                    child: Text('OK'),
-                                  ),
-                                ],
-                              );
-                            },
-                          );
-                        }
-                      },
-                      label: 'Register',
+                        },
+                        label: 'Register',
+                      ),
                     ),
-                    CustomButton(
-                      txtColor: kLightColor,
-                      bgColor: kBottomAppColor,
-                      callBackFunction: () {
-                        Navigator.pop(context);
-                      },
-                      label: 'Back',
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      child: CustomButton(
+                        txtColor: kLightColor,
+                        bgColor: kBottomAppColor,
+                        callBackFunction: () {
+                          Navigator.pop(context);
+                        },
+                        label: 'Back',
+                      ),
                     ),
                   ],
                 ),

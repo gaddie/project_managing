@@ -140,6 +140,27 @@ class _ProjectDetailsState extends State<ProjectDetails> {
     }
   }
 
+  void editCost(String costId, Map<String, dynamic> newData) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('costs')
+          .doc(costId)
+          .update(newData);
+      int index = costs.indexWhere((cost) => cost['id'] == costId);
+      if (index != -1) {
+        setState(() {
+          costs[index].addAll(newData);
+        });
+        print('Cost edited successfully');
+      } else {
+        print('Cost not found');
+      }
+    } catch (e) {
+      print('Error editing cost: $e');
+      // Handle error, show message, etc.
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -267,6 +288,9 @@ class _ProjectDetailsState extends State<ProjectDetails> {
                       onDelete: () {
                         deleteCost(cost['id']);
                       },
+                      cost: costs,
+                      costId: cost['id'],
+                      expenseType: cost['expenseType'],
                     ),
                   Row(
                     children: [

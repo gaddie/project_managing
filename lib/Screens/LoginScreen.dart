@@ -92,137 +92,145 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                     ),
-                    CustomButton(
-                      txtColor: kLightColor,
-                      bgColor: kBottomAppColor,
-                      callBackFunction: () async {
-                        setState(() {
-                          showSpinner = true;
-                        });
-                        if (isValidEmail(email)) {
-                          try {
-                            final user = await _auth.signInWithEmailAndPassword(
-                              email: email,
-                              password: password,
-                            );
-                            if (user != null) {
-                              Navigator.pushNamed(context, '/homePage');
-                            }
-                            setState(() {
-                              showSpinner = false;
-                            });
-                          } catch (e) {
-                            print(e);
-                            setState(() {
-                              showSpinner = false;
-                            });
-
-                            // Check if the error is due to invalid credentials
-                            if (e is FirebaseAuthException) {
-                              // Check specific error codes
-                              if (e.code == 'network-request-failed') {
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return AlertDialog(
-                                      title: Text('Error'),
-                                      content: Text(
-                                          'Check your internet connection'),
-                                      actions: <Widget>[
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.of(context)
-                                                .pop(); // Close the dialog
-                                          },
-                                          child: Text('OK'),
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                );
-                              } else if (e.code == 'invalid-credential') {
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return AlertDialog(
-                                      title: Text('Error'),
-                                      content:
-                                          Text('Invalid email or password'),
-                                      actions: <Widget>[
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.of(context)
-                                                .pop(); // Close the dialog
-                                          },
-                                          child: Text('OK'),
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                );
-                              } else {
-                                // Handle other FirebaseAuthException errors
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return AlertDialog(
-                                      title: Text('Error'),
-                                      content: Text('${e.message}'),
-                                      actions: <Widget>[
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.of(context)
-                                                .pop(); // Close the dialog
-                                          },
-                                          child: Text('OK'),
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                );
-                              }
-                            } else {
-                              // Handle other types of exceptions
-                              print(e);
-                            }
-                          }
-                        } else {
+                    Padding(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                      child: CustomButton(
+                        txtColor: kLightColor,
+                        bgColor: kBottomAppColor,
+                        callBackFunction: () async {
                           setState(() {
-                            showSpinner = false;
+                            showSpinner = true;
                           });
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: Text('Error'),
-                                content: Text('Invalid Email'),
-                                actions: <Widget>[
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.of(context)
-                                          .pop(); // Close the dialog
-                                    },
-                                    child: Text('OK'),
-                                  ),
-                                ],
+                          if (isValidEmail(email)) {
+                            try {
+                              final user =
+                                  await _auth.signInWithEmailAndPassword(
+                                email: email,
+                                password: password,
                               );
-                            },
-                          );
-                        }
-                      },
-                      label: 'Login',
+                              if (user != null) {
+                                Navigator.pushNamed(context, '/homePage');
+                              }
+                              setState(() {
+                                showSpinner = false;
+                              });
+                            } catch (e) {
+                              print(e);
+                              setState(() {
+                                showSpinner = false;
+                              });
+
+                              // Check if the error is due to invalid credentials
+                              if (e is FirebaseAuthException) {
+                                // Check specific error codes
+                                if (e.code == 'network-request-failed') {
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: Text('Error'),
+                                        content: Text(
+                                            'Check your internet connection'),
+                                        actions: <Widget>[
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.of(context)
+                                                  .pop(); // Close the dialog
+                                            },
+                                            child: Text('OK'),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                } else if (e.code == 'invalid-credential') {
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: Text('Error'),
+                                        content:
+                                            Text('Invalid email or password'),
+                                        actions: <Widget>[
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.of(context)
+                                                  .pop(); // Close the dialog
+                                            },
+                                            child: Text('OK'),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                } else {
+                                  // Handle other FirebaseAuthException errors
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: Text('Error'),
+                                        content: Text('${e.message}'),
+                                        actions: <Widget>[
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.of(context)
+                                                  .pop(); // Close the dialog
+                                            },
+                                            child: Text('OK'),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                }
+                              } else {
+                                // Handle other types of exceptions
+                                print(e);
+                              }
+                            }
+                          } else {
+                            setState(() {
+                              showSpinner = false;
+                            });
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text('Error'),
+                                  content: Text('Invalid Email'),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context)
+                                            .pop(); // Close the dialog
+                                      },
+                                      child: Text('OK'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          }
+                        },
+                        label: 'Login',
+                      ),
                     ),
-                    CustomButton(
-                      txtColor: kLightColor,
-                      bgColor: kBottomAppColor,
-                      callBackFunction: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => RegisterScreen()),
-                        );
-                      },
-                      label: 'Register',
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      child: CustomButton(
+                        txtColor: kLightColor,
+                        bgColor: kBottomAppColor,
+                        callBackFunction: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => RegisterScreen()),
+                          );
+                        },
+                        label: 'Register',
+                      ),
                     ),
                   ],
                 ),
