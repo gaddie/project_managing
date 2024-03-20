@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:project_manager/Constants.dart';
 import 'package:project_manager/Components/InputField.dart';
@@ -70,7 +71,6 @@ class _CreateProjectState extends State<CreateProject> {
         builder: (context, orientation) {
           return SingleChildScrollView(
             child: Container(
-              padding: EdgeInsets.symmetric(vertical: 20, horizontal: 10),
               child: DelayedDisplay(
                 delay: Duration(microseconds: 200),
                 child: Column(
@@ -106,38 +106,42 @@ class _CreateProjectState extends State<CreateProject> {
                         });
                       },
                     ),
-                    CustomButton(
-                      txtColor: kLightColor,
-                      bgColor: kBottomAppColor,
-                      callBackFunction: () {
-                        if (mounted) {
-                          setState(() {
-                            if (projectName.isNotEmpty ||
-                                startUpCost.isNotEmpty ||
-                                description.isNotEmpty) {
-                              if (startDate == null) {
-                                startDate = DateTime.now();
+                    Padding(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                      child: CustomButton(
+                        txtColor: kLightColor,
+                        bgColor: kBottomAppColor,
+                        callBackFunction: () {
+                          if (mounted) {
+                            setState(() {
+                              if (projectName.isNotEmpty ||
+                                  startUpCost.isNotEmpty ||
+                                  description.isNotEmpty) {
+                                if (startDate == null) {
+                                  startDate = DateTime.now();
+                                }
+                                errorMessage = false;
+                                _firestore.collection('projects').add({
+                                  'user': loggedInUser.email,
+                                  'projectName': projectName,
+                                  'description': description,
+                                  'startUpCost': startUpCost,
+                                  'startDate': startDate,
+                                });
+                                MessageHandler.showMessage(
+                                    context,
+                                    'Your project has been created',
+                                    kBottomAppColor);
+                                Navigator.pop(context);
+                              } else {
+                                errorMessage = true;
                               }
-                              errorMessage = false;
-                              _firestore.collection('projects').add({
-                                'user': loggedInUser.email,
-                                'projectName': projectName,
-                                'description': description,
-                                'startUpCost': startUpCost,
-                                'startDate': startDate,
-                              });
-                              MessageHandler.showMessage(
-                                  context,
-                                  'Your project has been created',
-                                  kBottomAppColor);
-                              Navigator.pop(context);
-                            } else {
-                              errorMessage = true;
-                            }
-                          });
-                        }
-                      },
-                      label: 'Create Project',
+                            });
+                          }
+                        },
+                        label: 'Create Project',
+                      ),
                     ),
                   ],
                 ),

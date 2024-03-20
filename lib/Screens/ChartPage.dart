@@ -1,4 +1,5 @@
 import 'package:delayed_display/delayed_display.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:project_manager/Components/CustomButton.dart';
 import 'package:project_manager/Constants.dart';
@@ -127,15 +128,18 @@ class _ChartsPageState extends State<ChartsPage> {
                     incomeData: incomeSpotsData,
                     expenseData: expenseSpotsData,
                   ),
-                  CustomButton(
-                    txtColor: kLightColor,
-                    bgColor: kBottomAppColor,
-                    callBackFunction: () {
-                      setState(() {
-                        Navigator.pop(context);
-                      });
-                    },
-                    label: 'Back',
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                    child: CustomButton(
+                      txtColor: kLightColor,
+                      bgColor: kBottomAppColor,
+                      callBackFunction: () {
+                        setState(() {
+                          Navigator.pop(context);
+                        });
+                      },
+                      label: 'Back',
+                    ),
                   ),
                 ],
               ),

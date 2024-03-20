@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:project_manager/Constants.dart';
 import 'package:delayed_display/delayed_display.dart';
@@ -174,15 +175,18 @@ class _ReportsPageState extends State<ReportsPage> {
                     );
                   }).toList(),
                 ),
-              CustomButton(
-                txtColor: kLightColor,
-                bgColor: kBottomAppColor,
-                callBackFunction: () {
-                  setState(() {
-                    Navigator.pop(context);
-                  });
-                },
-                label: 'Back',
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                child: CustomButton(
+                  txtColor: kLightColor,
+                  bgColor: kBottomAppColor,
+                  callBackFunction: () {
+                    setState(() {
+                      Navigator.pop(context);
+                    });
+                  },
+                  label: 'Back',
+                ),
               ),
             ],
           ),

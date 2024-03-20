@@ -63,12 +63,9 @@ class _ProjectDetailsState extends State<ProjectDetails> {
             project.data() as Map<String, dynamic>;
         if (projectData['user'] == loggedInUser.email &&
             projectData['projectName'] == widget.projectName) {
-          // Assuming 'date' field is a timestamp
-          Timestamp timestamp =
-              projectData['date']; // Accessing date field as timestamp
-          DateTime date =
-              timestamp.toDate(); // Convert Firebase Timestamp to DateTime
-          filteredCosts.add(projectData);
+          // Include document ID along with other cost details
+          Map<String, dynamic> costDetails = {...projectData, 'id': project.id};
+          filteredCosts.add(costDetails);
         }
       }
       setState(() {
@@ -127,6 +124,19 @@ class _ProjectDetailsState extends State<ProjectDetails> {
           );
         },
       );
+    }
+  }
+
+  void deleteCost(String costId) async {
+    try {
+      await FirebaseFirestore.instance.collection('costs').doc(costId).delete();
+      setState(() {
+        costs.removeWhere((cost) => cost['id'] == costId);
+      });
+      print('Cost deleted successfully');
+    } catch (e) {
+      print('Error deleting cost: $e');
+      // Handle error, show message, etc.
     }
   }
 
@@ -244,6 +254,7 @@ class _ProjectDetailsState extends State<ProjectDetails> {
                   for (var cost in costs)
                     ExpenseCard(
                       color: kDarkGrey,
+                      amount: cost['amount'],
                       date:
                           '${cost['date'].toDate().day}/${cost['date'].toDate().month}/${cost['date'].toDate().year}',
                       label: cost['expenseType'],
@@ -253,28 +264,39 @@ class _ProjectDetailsState extends State<ProjectDetails> {
                       icon: cost['expenseType'] == 'Income'
                           ? kUpTrend
                           : kDownTrend,
+                      onDelete: () {
+                        deleteCost(cost['id']);
+                      },
                     ),
                   Row(
                     children: [
                       Expanded(
-                        child: CustomButton(
-                          txtColor: kLightColor,
-                          bgColor: kRedColor,
-                          callBackFunction: () {
-                            // Call deleteProject function when delete button is pressed
-                            deleteProject(context);
-                          },
-                          label: 'Delete',
+                        child: Padding(
+                          padding:
+                              EdgeInsets.only(top: 10, left: 10, right: 2.5),
+                          child: CustomButton(
+                            txtColor: kLightColor,
+                            bgColor: kRedColor,
+                            callBackFunction: () {
+                              // Call deleteProject function when delete button is pressed
+                              deleteProject(context);
+                            },
+                            label: 'Delete Project',
+                          ),
                         ),
                       ),
                       Expanded(
-                        child: CustomButton(
-                          txtColor: kLightColor,
-                          bgColor: kBottomAppColor,
-                          callBackFunction: () {
-                            Navigator.pop(context);
-                          },
-                          label: 'Back',
+                        child: Padding(
+                          padding:
+                              EdgeInsets.only(top: 10, left: 2.5, right: 10),
+                          child: CustomButton(
+                            txtColor: kLightColor,
+                            bgColor: kBottomAppColor,
+                            callBackFunction: () {
+                              Navigator.pop(context);
+                            },
+                            label: 'Back',
+                          ),
                         ),
                       ),
                     ],

@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:project_manager/Constants.dart';
 import 'package:project_manager/Components/CustomButton.dart';
 import 'package:project_manager/Components/DropdownMenu.dart';
@@ -138,52 +140,60 @@ class _ExpenseTrackingState extends State<ExpenseTracking> {
                     });
                   },
                 ),
-                CustomButton(
-                  txtColor: kBottomAppColor,
-                  bgColor: kLightColor,
-                  callBackFunction: () {
-                    if (mounted) {
-                      if (amount.isEmpty) {
-                        setState(() {
-                          errorMessage = true;
-                        });
-                      } else {
-                        if (selectedDropdownValue.isNotEmpty) {
-                          if (spendDate == null) {
-                            spendDate = DateTime.now();
-                          }
-                          _firestore.collection('costs').add({
-                            'user': loggedInUser.email,
-                            'amount': amount,
-                            'description': description,
-                            'expenseType': selectedOption,
-                            'projectName': selectedDropdownValue,
-                            'date': spendDate,
-                          }).then((_) {
-                            // Show message after adding data to Firestore
-                            MessageHandler.showMessage(context,
-                                'Your amount has been added', kBottomAppColor);
-                          }).catchError((error) {
-                            // Handle error while adding data to Firestore
-                            print('Error adding document: $error');
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  child: CustomButton(
+                    txtColor: kBottomAppColor,
+                    bgColor: kLightColor,
+                    callBackFunction: () {
+                      if (mounted) {
+                        if (amount.isEmpty) {
+                          setState(() {
+                            errorMessage = true;
                           });
                         } else {
-                          print('you have to create a project');
+                          if (selectedDropdownValue.isNotEmpty) {
+                            if (spendDate == null) {
+                              spendDate = DateTime.now();
+                            }
+                            _firestore.collection('costs').add({
+                              'user': loggedInUser.email,
+                              'amount': amount,
+                              'description': description,
+                              'expenseType': selectedOption,
+                              'projectName': selectedDropdownValue,
+                              'date': spendDate,
+                            }).then((_) {
+                              // Show message after adding data to Firestore
+                              MessageHandler.showMessage(
+                                  context,
+                                  'Your amount has been added',
+                                  kBottomAppColor);
+                            }).catchError((error) {
+                              // Handle error while adding data to Firestore
+                              print('Error adding document: $error');
+                            });
+                          } else {
+                            print('you have to create a project');
+                          }
                         }
                       }
-                    }
-                  },
-                  label: 'Add',
+                    },
+                    label: 'Add',
+                  ),
                 ),
-                CustomButton(
-                  txtColor: kLightColor,
-                  bgColor: kBottomAppColor,
-                  callBackFunction: () {
-                    setState(() {
-                      Navigator.pop(context);
-                    });
-                  },
-                  label: 'Back',
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 10),
+                  child: CustomButton(
+                    txtColor: kLightColor,
+                    bgColor: kBottomAppColor,
+                    callBackFunction: () {
+                      setState(() {
+                        Navigator.pop(context);
+                      });
+                    },
+                    label: 'Back',
+                  ),
                 ),
               ],
             ),

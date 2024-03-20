@@ -8,13 +8,17 @@ class ExpenseCard extends StatefulWidget {
       required this.date,
       required this.label,
       required this.iconColor,
-      required this.icon});
+      required this.icon,
+      required this.amount,
+      required this.onDelete});
 
   final Color? color;
   final String date;
   final String label;
   final Color? iconColor;
   final IconData icon;
+  final String amount;
+  final VoidCallback onDelete;
 
   @override
   State<ExpenseCard> createState() => _ExpenseCardState();
@@ -71,6 +75,10 @@ class _ExpenseCardState extends State<ExpenseCard> {
                                     color: kBottomAppColor),
                               ),
                               Text(
+                                '${widget.amount}',
+                                style: TextStyle(color: kBottomAppColor),
+                              ),
+                              Text(
                                 widget.date,
                                 style: TextStyle(color: kBottomAppColor),
                               )
@@ -82,9 +90,7 @@ class _ExpenseCardState extends State<ExpenseCard> {
                     Row(
                       children: [
                         IconButton(
-                          onPressed: () {
-                            print('deleted');
-                          },
+                          onPressed: widget.onDelete,
                           icon: Icon(
                             Icons.delete,
                             color: kRedColor,

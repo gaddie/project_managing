@@ -20,24 +20,21 @@ class CustomButton extends StatefulWidget {
 class _CustomButtonState extends State<CustomButton> {
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-      child: ElevatedButton(
-        onPressed: () {
-          widget.callBackFunction();
-        },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: widget.bgColor,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20.0),
-          ),
+    return ElevatedButton(
+      onPressed: () {
+        widget.callBackFunction();
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: widget.bgColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20.0),
         ),
-        child: Padding(
-          padding: EdgeInsets.symmetric(vertical: 17),
-          child: Text(
-            widget.label,
-            style: TextStyle(color: widget.txtColor, fontSize: kNormalFontSize),
-          ),
+      ),
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: 17),
+        child: Text(
+          widget.label,
+          style: TextStyle(color: widget.txtColor, fontSize: kNormalFontSize),
         ),
       ),
     );
