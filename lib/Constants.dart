@@ -14,6 +14,8 @@ const kGreyColor = Color(0xFFD0C9C0);
 const kDarkGrey = Color(0xFFA8A196);
 const kUpArrow = Icons.arrow_circle_up_sharp;
 const kDownArrow = Icons.arrow_circle_down_sharp;
+const kDownTrend = Icons.trending_down;
+const kUpTrend = Icons.trending_up;
 
 const kGradient = LinearGradient(
   colors: [kDarkColor, kBottomAppColor], // Adjust colors as needed

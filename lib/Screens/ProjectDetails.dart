@@ -8,6 +8,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:project_manager/Components/MessageHandler.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:project_manager/Components/ExpenseCard.dart';
 
 class ProjectDetails extends StatefulWidget {
   ProjectDetails({
@@ -32,6 +33,8 @@ class _ProjectDetailsState extends State<ProjectDetails> {
   bool showSpinner = false;
   final _auth = FirebaseAuth.instance;
   late User loggedInUser;
+  late List<Map<String, dynamic>> costs = [];
+  final _firestore = FirebaseFirestore.instance;
 
   void getCurrentUser() async {
     try {
@@ -48,6 +51,30 @@ class _ProjectDetailsState extends State<ProjectDetails> {
   void initState() {
     super.initState();
     getCurrentUser();
+    getCosts();
+  }
+
+  // getting the costs from firebase
+  void getCosts() async {
+    await for (var snapshot in _firestore.collection('costs').snapshots()) {
+      List<Map<String, dynamic>> filteredCosts = [];
+      for (var project in snapshot.docs) {
+        Map<String, dynamic> projectData =
+            project.data() as Map<String, dynamic>;
+        if (projectData['user'] == loggedInUser.email &&
+            projectData['projectName'] == widget.projectName) {
+          // Assuming 'date' field is a timestamp
+          Timestamp timestamp =
+              projectData['date']; // Accessing date field as timestamp
+          DateTime date =
+              timestamp.toDate(); // Convert Firebase Timestamp to DateTime
+          filteredCosts.add(projectData);
+        }
+      }
+      setState(() {
+        costs = filteredCosts;
+      });
+    }
   }
 
   // Function to delete the project
@@ -107,214 +134,155 @@ class _ProjectDetailsState extends State<ProjectDetails> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kBgLightColor,
+      appBar: AppBar(
+        title: Text(
+          widget.projectName,
+          style: TextStyle(color: kBottomAppColor),
+        ),
+      ),
       body: ModalProgressHUD(
         inAsyncCall: showSpinner,
-        child: CustomScrollView(
-          slivers: [
-            SliverAppBar(
-              expandedHeight: 100,
-              pinned: true,
-              iconTheme: IconThemeData(
-                color: kBottomAppColor, // Change the back arrow color
-              ),
-              flexibleSpace: FlexibleSpaceBar(
-                titlePadding:
-                    EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-                title: Text(
-                  widget.projectName,
-                  style: TextStyle(color: kBottomAppColor),
-                ),
-                background: Container(
-                  color: kLightColor,
-                ),
-              ),
-            ),
-            SliverToBoxAdapter(
-              child: DelayedDisplay(
-                delay: Duration(microseconds: 200),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Row(
-                      // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        // start date
-                        Expanded(
-                          child: Padding(
-                            padding:
-                                EdgeInsets.only(top: 10, left: 10, right: 10),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: kLightColor,
-                                borderRadius: BorderRadius.circular(20),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: kGreyColor.withOpacity(0.3),
-                                    spreadRadius: 2,
-                                    blurRadius: 5,
-                                    offset: Offset(0, 2),
-                                  ),
-                                ],
-                              ),
-                              child: Padding(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 10, vertical: 20),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Column(
-                                      children: [
-                                        Center(
-                                          child: Text(
-                                            'Start Date',
-                                            style: TextStyle(
-                                              fontSize: kNormalFontSize,
-                                              color: kBottomAppColor,
-                                            ),
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          height: 5,
-                                        ),
-                                        Center(
-                                          child: Text(
-                                            ' ${widget.startDate}',
-                                            style: TextStyle(
-                                              fontSize: kNormalFontSize,
-                                              color: kBottomAppColor,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        // start up cost
-                        Expanded(
-                          child: Padding(
-                            padding: EdgeInsets.only(top: 10, right: 10),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: kLightColor,
-                                borderRadius: BorderRadius.circular(20),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: kGreyColor.withOpacity(0.3),
-                                    spreadRadius: 2,
-                                    blurRadius: 5,
-                                    offset: Offset(0, 2),
-                                  ),
-                                ],
-                              ),
-                              child: Padding(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 10, vertical: 20),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Center(
-                                      child: Text(
-                                        'Start Up Cost',
-                                        style: TextStyle(
-                                          fontSize: kNormalFontSize,
-                                          color: kBottomAppColor,
-                                        ),
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      height: 5,
-                                    ),
-                                    Center(
-                                      child: Text(
-                                        '${widget.startUpCost}',
-                                        style: TextStyle(
-                                          fontSize: kNormalFontSize,
-                                          color: kBottomAppColor,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    // description
-                    Padding(
-                      padding: EdgeInsets.only(left: 10, right: 10, top: 10),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: kLightColor,
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            BoxShadow(
-                              color: kGreyColor.withOpacity(0.3),
-                              spreadRadius: 2,
-                              blurRadius: 5,
-                              offset: Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: Padding(
-                          padding:
-                              EdgeInsets.only(top: 10, left: 10, right: 10),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Center(
-                                child: Text(
-                                  'Description',
-                                  style: TextStyle(
-                                    fontSize: kNormalFontSize,
-                                    color: kBottomAppColor,
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.only(
-                                    left: 10, top: 10, bottom: 20),
-                                child: Text(
-                                  widget.description,
-                                  style: TextStyle(
-                                    fontSize: kNormalFontSize,
-                                    color: kBottomAppColor,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    // delete button
-                    CustomButton(
-                      txtColor: kLightColor,
-                      bgColor: kRedColor,
-                      callBackFunction: () {
-                        // Call deleteProject function when delete button is pressed
-                        deleteProject(context);
-                      },
-                      label: 'Delete',
-                    ),
-                    CustomButton(
-                      txtColor: kLightColor,
-                      bgColor: kBottomAppColor,
-                      callBackFunction: () {
-                        Navigator.pop(context);
-                      },
-                      label: 'Back',
+        child: DelayedDisplay(
+          delay: Duration(microseconds: 200),
+          child: ListView(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  color: kBgLightColor,
+                  borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(20),
+                      bottomRight: Radius.circular(20)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: kGreyColor.withOpacity(0.3),
+                      spreadRadius: 2,
+                      blurRadius: 5,
+                      offset: Offset(0, 2),
                     ),
                   ],
                 ),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Column(
+                            children: [
+                              Text(
+                                'Start Date',
+                                style: TextStyle(color: kDarkGrey),
+                              ),
+                              Text('${widget.startDate}'),
+                            ],
+                          ),
+                          Column(
+                            children: [
+                              Text(
+                                'Start up cost',
+                                style: TextStyle(color: kDarkGrey),
+                              ),
+                              Text('${widget.startUpCost}'),
+                            ],
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      if (widget.description.isNotEmpty)
+                        Container(
+                          decoration: BoxDecoration(
+                            color: kLightColor,
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: [
+                              BoxShadow(
+                                color: kGreyColor.withOpacity(0.3),
+                                spreadRadius: 2,
+                                blurRadius: 5,
+                                offset: Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Padding(
+                            padding:
+                                EdgeInsets.only(top: 10, left: 10, right: 10),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Center(
+                                  child: Text(
+                                    'Description',
+                                    style: TextStyle(
+                                      fontSize: kNormalFontSize,
+                                      color: kDarkGrey,
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                      left: 10, top: 10, bottom: 20),
+                                  child: Text(
+                                    widget.description,
+                                    style: TextStyle(
+                                      fontSize: kNormalFontSize,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
               ),
-            ),
-          ],
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  for (var cost in costs)
+                    ExpenseCard(
+                      color: kDarkGrey,
+                      date:
+                          '${cost['date'].toDate().day}/${cost['date'].toDate().month}/${cost['date'].toDate().year}',
+                      label: cost['expenseType'],
+                      iconColor: cost['expenseType'] == 'Income'
+                          ? kGreenColor
+                          : kRedColor,
+                      icon: cost['expenseType'] == 'Income'
+                          ? kUpTrend
+                          : kDownTrend,
+                    ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: CustomButton(
+                          txtColor: kLightColor,
+                          bgColor: kRedColor,
+                          callBackFunction: () {
+                            // Call deleteProject function when delete button is pressed
+                            deleteProject(context);
+                          },
+                          label: 'Delete',
+                        ),
+                      ),
+                      Expanded(
+                        child: CustomButton(
+                          txtColor: kLightColor,
+                          bgColor: kBottomAppColor,
+                          callBackFunction: () {
+                            Navigator.pop(context);
+                          },
+                          label: 'Back',
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

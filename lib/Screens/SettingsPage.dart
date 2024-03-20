@@ -98,7 +98,9 @@ class SettingsState extends State<SettingsPage> {
                                 ),
                                 Text(
                                   'Username',
-                                  style: TextStyle(fontSize: kNormalFontSize),
+                                  style: TextStyle(
+                                      fontSize: kNormalFontSize,
+                                      color: kDarkGrey),
                                 ),
                               ],
                             ),
@@ -127,7 +129,9 @@ class SettingsState extends State<SettingsPage> {
                                 ),
                                 Text(
                                   'Change Password',
-                                  style: TextStyle(fontSize: kNormalFontSize),
+                                  style: TextStyle(
+                                      fontSize: kNormalFontSize,
+                                      color: kDarkGrey),
                                 ),
                               ],
                             ),
@@ -181,7 +185,9 @@ class SettingsState extends State<SettingsPage> {
                                 ),
                                 Text(
                                   'Dark Mode',
-                                  style: TextStyle(fontSize: kNormalFontSize),
+                                  style: TextStyle(
+                                      fontSize: kNormalFontSize,
+                                      color: kDarkGrey),
                                 ),
                               ],
                             ),
@@ -237,7 +243,9 @@ class SettingsState extends State<SettingsPage> {
                                 ),
                                 Text(
                                   'Help',
-                                  style: TextStyle(fontSize: kNormalFontSize),
+                                  style: TextStyle(
+                                      fontSize: kNormalFontSize,
+                                      color: kDarkGrey),
                                 ),
                               ],
                             ),
