@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/material.dart';
 import 'package:project_manager/Constants.dart';
 import 'package:animations/animations.dart';
 import 'package:project_manager/Screens/CreateProject.dart';
@@ -67,7 +66,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return SafeArea(
       child: ListView(children: [
         Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -118,36 +117,16 @@ class _HomeScreenState extends State<HomeScreen> {
                     fontSize: kNormalFontSize, color: kBottomAppColor),
               ),
             ),
-            Container(
-              height: 230,
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: <Widget>[
-                    Container(
-                      width: 303.0,
-                      child: ReusableCard(
-                        label: 'Expense Tracking',
-                        icon: Icons.account_balance_wallet_sharp,
-                        onButtonPressed: () {
-                          return ExpenseTracking();
-                        },
-                      ),
-                    ),
-                    Container(
-                      width: 303.0,
-                      child: ReusableCard(
-                        label: 'Reports and charts',
-                        icon: Icons.analytics,
-                        onButtonPressed: () {
-                          return ReportsPage();
-                        },
-                      ),
-                    ),
-                    SizedBox(
-                      width: 15,
-                    )
-                  ],
+            Padding(
+              padding: EdgeInsets.only(right: 15),
+              child: Container(
+                height: 230,
+                child: ReusableCard(
+                  label: 'Reports and charts',
+                  icon: Icons.analytics,
+                  onButtonPressed: () {
+                    return ReportsPage();
+                  },
                 ),
               ),
             ),

@@ -9,6 +9,8 @@ import 'package:project_manager/Components/MessageHandler.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:project_manager/Components/ExpenseCard.dart';
+import 'package:project_manager/Screens/ChartPage.dart';
+import 'package:project_manager/Screens/ExpenseTracking.dart';
 
 class ProjectDetails extends StatefulWidget {
   ProjectDetails({
@@ -269,6 +271,48 @@ class _ProjectDetailsState extends State<ProjectDetails> {
                   ),
                 ),
               ),
+              Row(
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.only(top: 10, left: 10, right: 2.5),
+                      child: CustomButton(
+                        txtColor: kLightColor,
+                        bgColor: kRedColor,
+                        callBackFunction: () {
+                          // Call deleteProject function when delete button is pressed
+                          deleteProject(context);
+                        },
+                        label: 'Delete Project',
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.only(top: 10, left: 2.5, right: 10),
+                      child: CustomButton(
+                        callBackFunction: () {
+                          // Use Navigator to push ChartsPage onto the navigation stack
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ChartsPage(
+                                projectName: widget.projectName,
+                                costs: costs,
+                              ),
+                            ),
+                          );
+                        },
+                        label: 'Reports',
+                        bgColor: kBottomAppColor,
+                        txtColor: kBgLightColor,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+
+              // Expense cards
               Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -290,7 +334,6 @@ class _ProjectDetailsState extends State<ProjectDetails> {
                       },
                       cost: costs,
                       costId: cost['id'],
-                      expenseType: cost['expenseType'],
                     ),
                   Row(
                     children: [
@@ -300,12 +343,17 @@ class _ProjectDetailsState extends State<ProjectDetails> {
                               EdgeInsets.only(top: 10, left: 10, right: 2.5),
                           child: CustomButton(
                             txtColor: kLightColor,
-                            bgColor: kRedColor,
+                            bgColor: kBottomAppColor,
                             callBackFunction: () {
-                              // Call deleteProject function when delete button is pressed
-                              deleteProject(context);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ExpenseTracking(
+                                          projectName: widget.projectName,
+                                        )),
+                              );
                             },
-                            label: 'Delete Project',
+                            label: 'Expense Tracking',
                           ),
                         ),
                       ),

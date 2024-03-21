@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:project_manager/Constants.dart';
 import 'package:project_manager/Components/CustomButton.dart';
-import 'package:project_manager/Components/DropdownMenu.dart';
 import 'package:project_manager/Components/InputField.dart';
 import 'package:project_manager/Components/TextField.dart';
 import 'package:delayed_display/delayed_display.dart';
@@ -13,6 +12,10 @@ import 'package:project_manager/Components/MessageHandler.dart';
 import '../Components/DateField.dart';
 
 class ExpenseTracking extends StatefulWidget {
+  ExpenseTracking({this.projectName});
+
+  final String? projectName;
+
   @override
   State<ExpenseTracking> createState() => _ExpenseTrackingState();
 }
@@ -20,7 +23,6 @@ class ExpenseTracking extends StatefulWidget {
 class _ExpenseTrackingState extends State<ExpenseTracking> {
   final _firestore = FirebaseFirestore.instance;
   String selectedOption = 'Income';
-  late String selectedDropdownValue;
   final _auth = FirebaseAuth.instance;
   late User loggedInUser;
   late List<Map<String, dynamic>> projects = [];
@@ -33,7 +35,6 @@ class _ExpenseTrackingState extends State<ExpenseTracking> {
   void initState() {
     super.initState();
     getCurrentUser();
-    selectedDropdownValue = 'Project Name';
   }
 
   void getCurrentUser() async {
@@ -108,15 +109,19 @@ class _ExpenseTrackingState extends State<ExpenseTracking> {
                   ),
                 ),
                 Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                    child: MyDropdownMenu(
-                      onValueChanged: (value) {
-                        setState(() {
-                          selectedDropdownValue =
-                              value; // Update selected value
-                        });
-                      },
-                    )),
+                  padding: EdgeInsets.symmetric(horizontal: 10),
+                  child: TextFormField(
+                    initialValue: widget.projectName,
+                    enabled: false, // Disable editing
+                    decoration: InputDecoration(
+                      fillColor: kLightColor,
+                      filled: true, // Set to true for a filled input field
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20.0),
+                      ),
+                    ),
+                  ),
+                ),
                 InputField(
                   label: 'Amount',
                   integerOnly: true,
@@ -152,7 +157,9 @@ class _ExpenseTrackingState extends State<ExpenseTracking> {
                             errorMessage = true;
                           });
                         } else {
-                          if (selectedDropdownValue.isNotEmpty) {
+                          if (widget.projectName != null &&
+                              widget.projectName!.isNotEmpty) {
+                            // Project name exists, add the expense or income
                             if (spendDate == null) {
                               spendDate = DateTime.now();
                             }
@@ -161,7 +168,7 @@ class _ExpenseTrackingState extends State<ExpenseTracking> {
                               'amount': amount,
                               'description': description,
                               'expenseType': selectedOption,
-                              'projectName': selectedDropdownValue,
+                              'projectName': widget.projectName,
                               'date': spendDate,
                             }).then((_) {
                               // Show message after adding data to Firestore
@@ -174,7 +181,8 @@ class _ExpenseTrackingState extends State<ExpenseTracking> {
                               print('Error adding document: $error');
                             });
                           } else {
-                            print('you have to create a project');
+                            // Project name doesn't exist
+                            print('You have to create a project');
                           }
                         }
                       }

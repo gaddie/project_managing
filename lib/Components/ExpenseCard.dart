@@ -6,17 +6,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:project_manager/Components/MessageHandler.dart';
 
 class ExpenseCard extends StatefulWidget {
-  ExpenseCard(
-      {required this.color,
-      required this.cost,
-      required this.date,
-      required this.label,
-      required this.iconColor,
-      required this.icon,
-      required this.amount,
-      required this.costId,
-      required this.onDelete,
-      required this.expenseType});
+  ExpenseCard({
+    required this.color,
+    required this.cost,
+    required this.date,
+    required this.label,
+    required this.iconColor,
+    required this.icon,
+    required this.amount,
+    required this.costId,
+    required this.onDelete,
+  });
 
   final Color? color;
   final List cost;
@@ -27,9 +27,6 @@ class ExpenseCard extends StatefulWidget {
   final String amount;
   final VoidCallback onDelete;
   final String costId;
-  final String expenseType;
-
-  final _firestore = FirebaseFirestore.instance;
 
   @override
   State<ExpenseCard> createState() => _ExpenseCardState();

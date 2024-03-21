@@ -22,7 +22,7 @@ class _MyDropdownMenuState extends State<MyDropdownMenu> {
   @override
   void initState() {
     super.initState();
-    dropdownValue = ''; // Initialize with empty string
+    dropdownValue = '';
     getCurrentUser();
   }
 

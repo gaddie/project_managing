@@ -8,13 +8,15 @@ class InputField extends StatelessWidget {
       this.password = false,
       this.onChanged,
       this.integerOnly = false,
-      this.errorText});
+      this.errorText,
+      this.isEnabled = true});
 
   String label;
   bool password;
   final ValueChanged<String>? onChanged;
   final bool integerOnly;
   final errorText;
+  bool isEnabled;
 
   @override
   Widget build(BuildContext context) {

@@ -45,10 +45,6 @@ class _ChartsPageState extends State<ChartsPage> {
 
     // Create an instance of ChartData
     ChartData chartData = ChartData();
-    // Retrieve the max data value based on the matching costs
-    // double maxDataValue = chartData.maxDataValue(matchingCosts);
-    // List ChartRange = chartData.calculateRange(maxDataValue);
-    // Map Spots = chartData.chartPoints(matchingCosts);
 
     List<List<List<double>>> days = chartData.getCostOfWeek(matchingCosts);
 
@@ -58,9 +54,6 @@ class _ChartsPageState extends State<ChartsPage> {
     List<double> currentWeekIncomeData = days[0][currentWeekNumber];
     List<double> currentWeekExpenseData = days[1][currentWeekNumber];
 
-    // maximumValue = maxDataValue;
-    // range = ChartRange;
-    // chartSpots = Spots;
     incomeWeekData = currentWeekIncomeData;
     expenseWeekData = currentWeekExpenseData;
 
