@@ -84,7 +84,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     width: 10,
                   ),
                   Text(
-                    'John Doe',
+                    'Home',
                     style: TextStyle(
                         fontSize: kNormalFontSize, color: kBottomAppColor),
                   ),

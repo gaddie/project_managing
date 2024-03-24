@@ -6,6 +6,7 @@ import 'package:project_manager/Constants.dart';
 import 'package:project_manager/ChartData.dart';
 import 'package:project_manager/Components/NewChart.dart';
 import 'package:project_manager/Components/NewBarChart.dart';
+import 'package:project_manager/Components/RoundButton.dart';
 
 class ChartsPage extends StatefulWidget {
   // passsing the project name to the line chart
@@ -26,6 +27,7 @@ class _ChartsPageState extends State<ChartsPage> {
   List<double> expenseWeekData = [];
   List<double> incomeSpotsData = [];
   List<double> expenseSpotsData = [];
+  int weekNumber = 0;
 
   void getCurrentCost() async {
     String targetProjectName = widget.projectName;
@@ -50,12 +52,16 @@ class _ChartsPageState extends State<ChartsPage> {
 
     int currentWeekNumber = chartData.getISOWeekNumber(DateTime.now());
 
+    weekNumber = currentWeekNumber;
     // Access the income data for the current week
-    List<double> currentWeekIncomeData = days[0][currentWeekNumber];
-    List<double> currentWeekExpenseData = days[1][currentWeekNumber];
+    List<double> currentWeekIncomeData = days[0][weekNumber];
+    List<double> currentWeekExpenseData = days[1][weekNumber];
+    weekNumber = currentWeekNumber;
 
     incomeWeekData = currentWeekIncomeData;
     expenseWeekData = currentWeekExpenseData;
+
+    setState(() {});
 
     Map<String, List<double>> pointsData = chartData.points(matchingCosts);
 
@@ -96,7 +102,7 @@ class _ChartsPageState extends State<ChartsPage> {
                     padding: EdgeInsets.symmetric(horizontal: 20),
                     child: Center(
                       child: Text(
-                        'Total weekly spend',
+                        'weekly spend',
                         style: TextStyle(fontSize: 18, color: kChartsTxtColor),
                       ),
                     ),
@@ -143,3 +149,12 @@ class _ChartsPageState extends State<ChartsPage> {
     );
   }
 }
+
+// RoundButton(
+// icon: Icons.add,
+// callBackFunction: () {
+// setState(() {
+// weekNumber += 1;
+// });
+// },
+// ),

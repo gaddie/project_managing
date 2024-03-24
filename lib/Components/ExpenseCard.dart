@@ -15,7 +15,6 @@ class ExpenseCard extends StatefulWidget {
     required this.icon,
     required this.amount,
     required this.costId,
-    required this.onDelete,
   });
 
   final Color? color;
@@ -25,7 +24,6 @@ class ExpenseCard extends StatefulWidget {
   final Color? iconColor;
   final IconData icon;
   final String amount;
-  final VoidCallback onDelete;
   final String costId;
 
   @override
@@ -51,6 +49,19 @@ class _ExpenseCardState extends State<ExpenseCard> {
       }
     } catch (e) {
       print('Error editing expense type: $e');
+    }
+  }
+
+  void deleteCost(String costId) async {
+    try {
+      await FirebaseFirestore.instance.collection('costs').doc(costId).delete();
+      setState(() {
+        widget.cost.removeWhere((cost) => cost['id'] == costId);
+      });
+      print('Cost deleted successfully');
+    } catch (e) {
+      print('Error deleting cost: $e');
+      // Handle error, show message, etc.
     }
   }
 
@@ -119,7 +130,35 @@ class _ExpenseCardState extends State<ExpenseCard> {
                     Row(
                       children: [
                         IconButton(
-                          onPressed: widget.onDelete,
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text('Delete'),
+                                  content:
+                                      Text('Are you sure you want to delete?'),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () {
+                                        deleteCost(widget.costId);
+                                        Navigator.of(context)
+                                            .pop(); // Close the dialog
+                                      },
+                                      child: Text('Yes'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context)
+                                            .pop(); // Close the dialog
+                                      },
+                                      child: Text('Back'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
                           icon: Icon(
                             Icons.delete,
                             color: kRedColor,
@@ -182,3 +221,5 @@ class _ExpenseCardState extends State<ExpenseCard> {
     );
   }
 }
+
+// deleteCost(cost['id']);

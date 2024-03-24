@@ -11,6 +11,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:project_manager/Components/ExpenseCard.dart';
 import 'package:project_manager/Screens/ChartPage.dart';
 import 'package:project_manager/Screens/ExpenseTracking.dart';
+import 'package:project_manager/Components/MessageHandler.dart';
+import 'package:project_manager/Components/InputField.dart';
 
 class ProjectDetails extends StatefulWidget {
   ProjectDetails({
@@ -37,6 +39,8 @@ class _ProjectDetailsState extends State<ProjectDetails> {
   late User loggedInUser;
   late List<Map<String, dynamic>> costs = [];
   final _firestore = FirebaseFirestore.instance;
+  String deleteProjectName = '';
+  bool errorMessage = false;
 
   void getCurrentUser() async {
     try {
@@ -77,36 +81,75 @@ class _ProjectDetailsState extends State<ProjectDetails> {
   }
 
   // Function to delete the project
-  void deleteProject(BuildContext context) async {
-    setState(() {
-      showSpinner = true;
-    });
+  void deleteProject(BuildContext context) {
     try {
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Delete'),
+              content: Container(
+                width: 300,
+                height: 100,
+                child: InputField(
+                  label: 'Enter the project name',
+                  errorText: errorMessage ? 'This field is required' : null,
+                  onChanged: (value) {
+                    deleteProjectName = value;
+                  },
+                ),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () async {
+                    // editCost(widget.costId, newCost);
+                    if (widget.projectName == deleteProjectName) {
+                      setState(() {
+                        showSpinner = true;
+                      });
+                      await FirebaseFirestore.instance
+                          .collection('projects')
+                          .doc(widget.projectId)
+                          .delete();
+
+                      // Delete costs associated with the project
+                      QuerySnapshot costSnapshot = await FirebaseFirestore
+                          .instance
+                          .collection('costs')
+                          .where('user', isEqualTo: loggedInUser.email)
+                          .where('projectName', isEqualTo: widget.projectName)
+                          .get();
+                      costSnapshot.docs.forEach((doc) async {
+                        await doc.reference.delete();
+                      });
+
+                      // Check if the context is still valid before showing the message
+                      if (Navigator.canPop(context)) {
+                        MessageHandler.showMessage(context,
+                            'Your project has been deleted', kBottomAppColor);
+                        Navigator.pop(context); // Navigate back after deletion
+                      }
+                      setState(() {
+                        showSpinner = false;
+                      });
+                      Navigator.of(context).pop(); // Close the dialog
+                    } else {
+                      MessageHandler.showMessage(context,
+                          'The project name does not match', kBottomAppColor);
+                    }
+                  },
+                  child: Text('Delete'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close the dialog
+                  },
+                  child: Text('Back'),
+                ),
+              ],
+            );
+          });
       // Delete project
-      await FirebaseFirestore.instance
-          .collection('projects')
-          .doc(widget.projectId)
-          .delete();
-
-      // Delete costs associated with the project
-      QuerySnapshot costSnapshot = await FirebaseFirestore.instance
-          .collection('costs')
-          .where('user', isEqualTo: loggedInUser.email)
-          .where('projectName', isEqualTo: widget.projectName)
-          .get();
-      costSnapshot.docs.forEach((doc) async {
-        await doc.reference.delete();
-      });
-
-      // Check if the context is still valid before showing the message
-      if (Navigator.canPop(context)) {
-        MessageHandler.showMessage(
-            context, 'Your project has been deleted', kBottomAppColor);
-        Navigator.pop(context); // Navigate back after deletion
-      }
-      setState(() {
-        showSpinner = false;
-      });
     } catch (e) {
       print('Error deleting project: $e');
       showDialog(
@@ -126,40 +169,6 @@ class _ProjectDetailsState extends State<ProjectDetails> {
           );
         },
       );
-    }
-  }
-
-  void deleteCost(String costId) async {
-    try {
-      await FirebaseFirestore.instance.collection('costs').doc(costId).delete();
-      setState(() {
-        costs.removeWhere((cost) => cost['id'] == costId);
-      });
-      print('Cost deleted successfully');
-    } catch (e) {
-      print('Error deleting cost: $e');
-      // Handle error, show message, etc.
-    }
-  }
-
-  void editCost(String costId, Map<String, dynamic> newData) async {
-    try {
-      await FirebaseFirestore.instance
-          .collection('costs')
-          .doc(costId)
-          .update(newData);
-      int index = costs.indexWhere((cost) => cost['id'] == costId);
-      if (index != -1) {
-        setState(() {
-          costs[index].addAll(newData);
-        });
-        print('Cost edited successfully');
-      } else {
-        print('Cost not found');
-      }
-    } catch (e) {
-      print('Error editing cost: $e');
-      // Handle error, show message, etc.
     }
   }
 
@@ -280,7 +289,6 @@ class _ProjectDetailsState extends State<ProjectDetails> {
                         txtColor: kLightColor,
                         bgColor: kRedColor,
                         callBackFunction: () {
-                          // Call deleteProject function when delete button is pressed
                           deleteProject(context);
                         },
                         label: 'Delete Project',
@@ -329,9 +337,6 @@ class _ProjectDetailsState extends State<ProjectDetails> {
                       icon: cost['expenseType'] == 'Income'
                           ? kUpTrend
                           : kDownTrend,
-                      onDelete: () {
-                        deleteCost(cost['id']);
-                      },
                       cost: costs,
                       costId: cost['id'],
                     ),
