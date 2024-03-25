@@ -21,6 +21,8 @@ class _LoginScreenState extends State<LoginScreen> {
   String email = '';
   String password = '';
   bool showSpinner = false;
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   //Function to validate email format
   bool isValidEmail(String email) {
@@ -54,6 +56,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     InputField(
                       label: 'Email',
+                      controller: _emailController,
                       onChanged: (value) {
                         setState(() {
                           email = value;
@@ -63,6 +66,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     InputField(
                       label: 'Password',
                       password: true,
+                      controller: _passwordController,
                       onChanged: (value) {
                         setState(() {
                           password = value;
@@ -110,8 +114,16 @@ class _LoginScreenState extends State<LoginScreen> {
                                 password: password,
                               );
                               if (user != null) {
+                                // Clear email and password fields
+                                setState(() {
+                                  _emailController.clear();
+                                  _passwordController.clear();
+                                  email = '';
+                                  password = '';
+                                });
                                 Navigator.pushNamed(context, '/homePage');
                               }
+                              // Clear email and password fields
                               setState(() {
                                 showSpinner = false;
                               });

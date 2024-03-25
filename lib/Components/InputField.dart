@@ -3,13 +3,15 @@ import 'package:project_manager/Constants.dart';
 import 'package:flutter/services.dart';
 
 class InputField extends StatelessWidget {
-  InputField(
-      {required this.label,
-      this.password = false,
-      this.onChanged,
-      this.integerOnly = false,
-      this.errorText,
-      this.isEnabled = true});
+  InputField({
+    required this.label,
+    this.password = false,
+    this.onChanged,
+    this.integerOnly = false,
+    this.errorText,
+    this.isEnabled = true,
+    this.controller,
+  });
 
   String label;
   bool password;
@@ -17,6 +19,7 @@ class InputField extends StatelessWidget {
   final bool integerOnly;
   final errorText;
   bool isEnabled;
+  final TextEditingController? controller;
 
   @override
   Widget build(BuildContext context) {
@@ -36,6 +39,7 @@ class InputField extends StatelessWidget {
           TextField(
             obscureText: password,
             onChanged: onChanged,
+            controller: controller,
             inputFormatters:
                 integerOnly ? [FilteringTextInputFormatter.digitsOnly] : null,
             decoration: InputDecoration(

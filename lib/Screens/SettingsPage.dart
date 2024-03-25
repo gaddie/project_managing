@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:project_manager/Constants.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SettingsPage extends StatefulWidget {
   @override
@@ -10,6 +12,66 @@ class SettingsPage extends StatefulWidget {
 
 class SettingsState extends State<SettingsPage> {
   bool Dark = false;
+  final _auth = FirebaseAuth.instance;
+  late User loggedInUser;
+  late List<Map<String, dynamic>> projects = [];
+  final _firestore = FirebaseFirestore.instance;
+  late List<Map<String, dynamic>> costs = [];
+
+  @override
+  void initState() {
+    super.initState();
+    getCurrentUser();
+    getProjects();
+    getCosts();
+  }
+
+  void getCurrentUser() async {
+    try {
+      final user = await _auth.currentUser;
+      if (user != null) {
+        loggedInUser = user;
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  // getting all the projects of the current user
+  void getProjects() async {
+    await for (var snapshot in _firestore.collection('projects').snapshots()) {
+      List<Map<String, dynamic>> filteredProjects = [];
+      for (var project in snapshot.docs) {
+        Map<String, dynamic> projectData =
+            project.data() as Map<String, dynamic>;
+        if (projectData['user'] == loggedInUser.email) {
+          // Add projectId to the projectData map
+          projectData['projectId'] = project.id;
+          filteredProjects.add(projectData);
+        }
+      }
+      setState(() {
+        projects = filteredProjects;
+      });
+    }
+  }
+
+  // getting all the costs of the current user
+  void getCosts() async {
+    await for (var snapshot in _firestore.collection('costs').snapshots()) {
+      List<Map<String, dynamic>> filteredCosts = [];
+      for (var project in snapshot.docs) {
+        Map<String, dynamic> projectData =
+            project.data() as Map<String, dynamic>;
+        if (projectData['user'] == loggedInUser.email) {
+          filteredCosts.add(projectData);
+        }
+      }
+      setState(() {
+        costs = filteredCosts;
+      });
+    }
+  }
 
   final MaterialStateProperty<Icon?> thumbIcon =
       MaterialStateProperty.resolveWith<Icon?>(
@@ -109,9 +171,7 @@ class SettingsState extends State<SettingsPage> {
                                 Icons.arrow_forward_ios,
                                 color: kDarkGrey,
                               ),
-                              onPressed: () {
-                                print('pressed');
-                              },
+                              onPressed: () {},
                             )
                           ],
                         ),
@@ -140,8 +200,60 @@ class SettingsState extends State<SettingsPage> {
                                 Icons.arrow_forward_ios,
                                 color: kDarkGrey,
                               ),
-                              onPressed: () {
-                                print('pressed');
+                              onPressed: () {},
+                            )
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.delete,
+                                  color: kDarkGrey,
+                                ),
+                                SizedBox(
+                                  width: 5,
+                                ),
+                                Text(
+                                  'Delete Account',
+                                  style: TextStyle(
+                                      fontSize: kNormalFontSize,
+                                      color: kDarkGrey),
+                                ),
+                              ],
+                            ),
+                            IconButton(
+                              icon: Icon(
+                                Icons.arrow_forward_ios,
+                                color: kDarkGrey,
+                              ),
+                              onPressed: () async {
+                                // Delete all projects associated with the current user
+                                for (var project in projects) {
+                                  await _firestore
+                                      .collection('projects')
+                                      .doc(project['projectId'])
+                                      .delete();
+                                }
+
+                                // Delete all costs associated with the current user
+                                for (var cost in costs) {
+                                  await _firestore
+                                      .collection('costs')
+                                      .doc(cost['id'])
+                                      .delete();
+                                }
+
+                                // Delete the current user
+                                try {
+                                  await loggedInUser.delete();
+                                  Navigator.pop(context);
+                                  print('User deleted successfully.');
+                                } catch (e) {
+                                  print('Error deleting user: $e');
+                                }
                               },
                             )
                           ],
@@ -254,9 +366,7 @@ class SettingsState extends State<SettingsPage> {
                                 Icons.arrow_forward_ios,
                                 color: kDarkGrey,
                               ),
-                              onPressed: () {
-                                print('pressed');
-                              },
+                              onPressed: () {},
                             )
                           ],
                         ),
@@ -265,6 +375,8 @@ class SettingsState extends State<SettingsPage> {
                   ),
                 ),
               ),
+              SizedBox(height: 20),
+              Text('Settings is not yet available')
             ],
           ),
         ]),

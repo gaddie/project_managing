@@ -5,7 +5,7 @@ class Help extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Text('Help screen'),
+        child: Text('Collaboration mode is not available'),
       ),
     );
   }
