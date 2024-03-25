@@ -71,7 +71,9 @@ class _ReportsPageState extends State<ReportsPage> {
               projectData['date']; // Accessing date field as timestamp
           DateTime date =
               timestamp.toDate(); // Convert Firebase Timestamp to DateTime
-          if (date.year == 2024) {
+          DateTime now = DateTime.now();
+          int currentYear = now.year;
+          if (date.year == currentYear) {
             filteredCosts.add(projectData);
           }
         }

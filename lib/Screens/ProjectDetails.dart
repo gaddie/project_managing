@@ -13,6 +13,7 @@ import 'package:project_manager/Screens/ChartPage.dart';
 import 'package:project_manager/Screens/ExpenseTracking.dart';
 import 'package:project_manager/Components/MessageHandler.dart';
 import 'package:project_manager/Components/InputField.dart';
+import 'dart:core';
 
 class ProjectDetails extends StatefulWidget {
   ProjectDetails({
@@ -71,7 +72,15 @@ class _ProjectDetailsState extends State<ProjectDetails> {
             projectData['projectName'] == widget.projectName) {
           // Include document ID along with other cost details
           Map<String, dynamic> costDetails = {...projectData, 'id': project.id};
-          filteredCosts.add(costDetails);
+          DateTime now = DateTime.now();
+          int currentYear = now.year;
+          Timestamp timestamp =
+              projectData['date']; // Accessing date field as timestamp
+          DateTime date =
+              timestamp.toDate(); // Convert Firebase Timestamp to DateTime
+          if (date.year == currentYear) {
+            filteredCosts.add(costDetails);
+          }
         }
       }
       setState(() {
@@ -380,6 +389,9 @@ class _ProjectDetailsState extends State<ProjectDetails> {
                   ),
                 ],
               ),
+              SizedBox(
+                height: 20,
+              )
             ],
           ),
         ),
