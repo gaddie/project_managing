@@ -4,6 +4,8 @@ import 'package:flutter/widgets.dart';
 import 'package:project_manager/Constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:project_manager/Components/MessageHandler.dart';
+import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
 class SettingsPage extends StatefulWidget {
   @override
@@ -17,6 +19,8 @@ class SettingsState extends State<SettingsPage> {
   late List<Map<String, dynamic>> projects = [];
   final _firestore = FirebaseFirestore.instance;
   late List<Map<String, dynamic>> costs = [];
+  bool showSpinner = false;
+  bool isDelete = false;
 
   @override
   void initState() {
@@ -229,31 +233,60 @@ class SettingsState extends State<SettingsPage> {
                                 Icons.arrow_forward_ios,
                                 color: kDarkGrey,
                               ),
-                              onPressed: () async {
-                                // Delete all projects associated with the current user
-                                for (var project in projects) {
-                                  await _firestore
-                                      .collection('projects')
-                                      .doc(project['projectId'])
-                                      .delete();
-                                }
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text('Delete Account'),
+                                      content: Text(
+                                          'Are you sure you want to delete your account?'),
+                                      actions: <Widget>[
+                                        TextButton(
+                                          onPressed: () async {
+                                            // Delete all projects associated with the current user
+                                            for (var project in projects) {
+                                              await _firestore
+                                                  .collection('projects')
+                                                  .doc(project['projectId'])
+                                                  .delete();
+                                            }
 
-                                // Delete all costs associated with the current user
-                                for (var cost in costs) {
-                                  await _firestore
-                                      .collection('costs')
-                                      .doc(cost['id'])
-                                      .delete();
-                                }
+                                            // Delete all costs associated with the current user
+                                            for (var cost in costs) {
+                                              await _firestore
+                                                  .collection('costs')
+                                                  .doc(cost['id'])
+                                                  .delete();
+                                            }
 
-                                // Delete the current user
-                                try {
-                                  await loggedInUser.delete();
-                                  Navigator.pop(context);
-                                  print('User deleted successfully.');
-                                } catch (e) {
-                                  print('Error deleting user: $e');
-                                }
+                                            // Delete the current user
+                                            try {
+                                              await loggedInUser.delete();
+                                              Navigator.pop(context);
+                                              print(
+                                                  'User deleted successfully.');
+                                            } catch (e) {
+                                              print('Error deleting user: $e');
+                                            }
+                                            MessageHandler.showMessage(
+                                                context,
+                                                'Your have deleted your account',
+                                                kBottomAppColor);
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: Text('Delete'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: Text('Back'),
+                                        )
+                                      ],
+                                    );
+                                  },
+                                );
                               },
                             )
                           ],
